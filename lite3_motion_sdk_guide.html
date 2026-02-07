@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Lite3 Motion SDK Development Guide</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="lite3_motion_sdk_guide_files/libs/clipboard/clipboard.min.js"></script>
+<script src="lite3_motion_sdk_guide_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="lite3_motion_sdk_guide_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="lite3_motion_sdk_guide_files/libs/quarto-html/popper.min.js"></script>
+<script src="lite3_motion_sdk_guide_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="lite3_motion_sdk_guide_files/libs/quarto-html/anchor.min.js"></script>
+<link href="lite3_motion_sdk_guide_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="lite3_motion_sdk_guide_files/libs/quarto-html/quarto-syntax-highlighting-fe31d7bd2deb2a321418d01dba375a64.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="lite3_motion_sdk_guide_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="lite3_motion_sdk_guide_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="lite3_motion_sdk_guide_files/libs/bootstrap/bootstrap-205fba4e4caefcd3f74b6a9fb46382ee.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Lite3 Motion SDK Development Guide</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="lite3-motion-sdk-development-guide" class="level1">
+<h1>Lite3 Motion SDK Development Guide</h1>
+<p>This guide explains how to modify the Lite3 Motion SDK code, upload it to the robot, compile, and execute.</p>
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<p>The Lite3 Motion SDK controls the Jueying Lite3 quadruped robot. The main components are:</p>
+<ul>
+<li><strong><code>main.cpp</code></strong> - Main control loop and timing logic</li>
+<li><strong><code>motionexample.h</code></strong> - Header file with class declarations</li>
+<li><strong><code>motionexample.cpp</code></strong> - Implementation of motion functions</li>
+</ul>
+</section>
+<section id="file-locations-on-robot" class="level2">
+<h2 class="anchored" data-anchor-id="file-locations-on-robot">File Locations on Robot</h2>
+<pre><code>/home/ysc/Lite3_MotionSDK/
+├── main.cpp                    # Main program
+├── include/
+│   └── motionexample.h         # Header file
+├── src/
+│   └── motionexample.cpp       # Implementation
+└── build/                      # Build directory (created after cmake)
+    └── Lite_motion             # Compiled executable</code></pre>
+<hr>
+</section>
+<section id="step-1-editing-the-files" class="level2">
+<h2 class="anchored" data-anchor-id="step-1-editing-the-files">Step 1: Editing the Files</h2>
+<section id="option-a-edit-locally-and-upload" class="level3">
+<h3 class="anchored" data-anchor-id="option-a-edit-locally-and-upload">Option A: Edit Locally and Upload</h3>
+<section id="copy-files-from-robot-to-local-machine" class="level4">
+<h4 class="anchored" data-anchor-id="copy-files-from-robot-to-local-machine">1.1 Copy Files from Robot to Local Machine</h4>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Copy files from robot to local workspace</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> <span class="st">'ysc@192.168.2.1:~/Lite3_MotionSDK/main.cpp'</span> .</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> <span class="st">'ysc@192.168.2.1:~/Lite3_MotionSDK/include/motionexample.h'</span> .</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> <span class="st">'ysc@192.168.2.1:~/Lite3_MotionSDK/src/motionexample.cpp'</span> .</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="edit-the-files" class="level4">
+<h4 class="anchored" data-anchor-id="edit-the-files">1.2 Edit the Files</h4>
+<p><strong>motionexample.h</strong> - Add new function declarations:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Add after StandUp declaration</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@brief</span><span class="co"> Extend all 4 legs to raise the robot higher</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">cmd</span><span class="co"> Issue control command</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">time</span><span class="co"> Current timestamp</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">data_state</span><span class="co"> Real-time status data of robot</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> ExtendAllLegs<span class="op">(</span>RobotCmd <span class="op">&amp;</span>cmd<span class="op">,</span> <span class="dt">double</span> time<span class="op">,</span> RobotData <span class="op">&amp;</span>data_state<span class="op">);</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@brief</span><span class="co"> Lower all 4 legs to bring robot closer to ground</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">cmd</span><span class="co"> Issue control command</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">time</span><span class="co"> Current timestamp</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">data_state</span><span class="co"> Real-time status data of robot</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> LowerAllLegs<span class="op">(</span>RobotCmd <span class="op">&amp;</span>cmd<span class="op">,</span> <span class="dt">double</span> time<span class="op">,</span> RobotData <span class="op">&amp;</span>data_state<span class="op">);</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>motionexample.cpp</strong> - Implement the functions:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@brief</span><span class="co"> Extend all 4 legs to raise the robot higher</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> MotionExample<span class="op">::</span>ExtendAllLegs<span class="op">(</span>RobotCmd <span class="op">&amp;</span>cmd<span class="op">,</span> <span class="dt">double</span> time<span class="op">,</span> RobotData <span class="op">&amp;</span>data_state<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> extend_time <span class="op">=</span> <span class="fl">1.0</span><span class="op">;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> cycle_time <span class="op">=</span> <span class="fl">0.001</span><span class="op">;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">// HipY=-25°, Knee=45° (extends leg, raises robot)</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  Vec3 goal_angle_extend<span class="op">;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  goal_angle_extend <span class="op">&lt;&lt;</span> <span class="dv">0</span> <span class="op">*</span> kDegree2Radian<span class="op">,</span> <span class="op">-</span><span class="dv">25</span> <span class="op">*</span> kDegree2Radian<span class="op">,</span> <span class="dv">45</span> <span class="op">*</span> kDegree2Radian<span class="op">;</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="op">(</span>time <span class="op">&lt;=</span> init_time <span class="op">+</span> extend_time<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    SwingToAngle<span class="op">(</span>init_angle_fl<span class="op">,</span> goal_angle_extend<span class="op">,</span> extend_time<span class="op">,</span> time <span class="op">-</span> init_time<span class="op">,</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>                 cycle_time<span class="op">,</span> <span class="st">"FL"</span><span class="op">,</span> cmd<span class="op">,</span> data_state<span class="op">);</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    SwingToAngle<span class="op">(</span>init_angle_fr<span class="op">,</span> goal_angle_extend<span class="op">,</span> extend_time<span class="op">,</span> time <span class="op">-</span> init_time<span class="op">,</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>                 cycle_time<span class="op">,</span> <span class="st">"FR"</span><span class="op">,</span> cmd<span class="op">,</span> data_state<span class="op">);</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    SwingToAngle<span class="op">(</span>init_angle_hl<span class="op">,</span> goal_angle_extend<span class="op">,</span> extend_time<span class="op">,</span> time <span class="op">-</span> init_time<span class="op">,</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>                 cycle_time<span class="op">,</span> <span class="st">"HL"</span><span class="op">,</span> cmd<span class="op">,</span> data_state<span class="op">);</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    SwingToAngle<span class="op">(</span>init_angle_hr<span class="op">,</span> goal_angle_extend<span class="op">,</span> extend_time<span class="op">,</span> time <span class="op">-</span> init_time<span class="op">,</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>                 cycle_time<span class="op">,</span> <span class="st">"HR"</span><span class="op">,</span> cmd<span class="op">,</span> data_state<span class="op">);</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Hold position</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> leg_side <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> leg_side <span class="op">&lt;</span> <span class="dv">4</span><span class="op">;</span> leg_side<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">3</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>        cmd<span class="op">.</span>joint_cmd<span class="op">[</span>leg_side <span class="op">*</span> <span class="dv">3</span> <span class="op">+</span> i<span class="op">].</span>kp <span class="op">=</span> <span class="dv">80</span><span class="op">;</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>        cmd<span class="op">.</span>joint_cmd<span class="op">[</span>leg_side <span class="op">*</span> <span class="dv">3</span> <span class="op">+</span> i<span class="op">].</span>kd <span class="op">=</span> <span class="fl">0.7</span><span class="op">;</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>        cmd<span class="op">.</span>joint_cmd<span class="op">[</span>leg_side <span class="op">*</span> <span class="dv">3</span> <span class="op">+</span> i<span class="op">].</span>torque <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>      <span class="op">}</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>      cmd<span class="op">.</span>joint_cmd<span class="op">[</span>leg_side <span class="op">*</span> <span class="dv">3</span><span class="op">].</span>position <span class="op">=</span> goal_angle_extend<span class="op">[</span><span class="dv">0</span><span class="op">];</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>      cmd<span class="op">.</span>joint_cmd<span class="op">[</span>leg_side <span class="op">*</span> <span class="dv">3</span> <span class="op">+</span> <span class="dv">1</span><span class="op">].</span>position <span class="op">=</span> goal_angle_extend<span class="op">[</span><span class="dv">1</span><span class="op">];</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>      cmd<span class="op">.</span>joint_cmd<span class="op">[</span>leg_side <span class="op">*</span> <span class="dv">3</span> <span class="op">+</span> <span class="dv">2</span><span class="op">].</span>position <span class="op">=</span> goal_angle_extend<span class="op">[</span><span class="dv">2</span><span class="op">];</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>      cmd<span class="op">.</span>joint_cmd<span class="op">[</span>leg_side <span class="op">*</span> <span class="dv">3</span><span class="op">].</span>velocity <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>      cmd<span class="op">.</span>joint_cmd<span class="op">[</span>leg_side <span class="op">*</span> <span class="dv">3</span> <span class="op">+</span> <span class="dv">1</span><span class="op">].</span>velocity <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>      cmd<span class="op">.</span>joint_cmd<span class="op">[</span>leg_side <span class="op">*</span> <span class="dv">3</span> <span class="op">+</span> <span class="dv">2</span><span class="op">].</span>velocity <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>main.cpp</strong> - Update the control flow:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">// In the while(1) loop, update the timing logic:</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span><span class="op">(</span>time_tick <span class="op">&lt;</span> <span class="dv">1000</span><span class="op">){</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  robot_set_up_demo<span class="op">.</span>PreStandUp<span class="op">(</span>robot_joint_cmd<span class="op">,</span>now_time<span class="op">,*</span>robot_data<span class="op">);</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span><span class="op">(</span>time_tick <span class="op">==</span> <span class="dv">1000</span><span class="op">){</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  robot_set_up_demo<span class="op">.</span>GetInitData<span class="op">(</span>robot_data<span class="op">-&gt;</span>joint_data<span class="op">,</span>now_time<span class="op">);</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span><span class="op">(</span>time_tick <span class="op">&gt;=</span> <span class="dv">1000</span> <span class="op">&amp;&amp;</span> time_tick <span class="op">&lt;</span> <span class="dv">4000</span><span class="op">){</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  robot_set_up_demo<span class="op">.</span>StandUp<span class="op">(</span>robot_joint_cmd<span class="op">,</span>now_time<span class="op">,*</span>robot_data<span class="op">);</span>  <span class="co">// Neutral</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span><span class="op">(</span>time_tick <span class="op">==</span> <span class="dv">4000</span><span class="op">){</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  robot_set_up_demo<span class="op">.</span>GetInitData<span class="op">(</span>robot_data<span class="op">-&gt;</span>joint_data<span class="op">,</span>now_time<span class="op">);</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span><span class="op">(</span>time_tick <span class="op">&gt;=</span> <span class="dv">4000</span> <span class="op">&amp;&amp;</span> time_tick <span class="op">&lt;</span> <span class="dv">6000</span><span class="op">){</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  robot_set_up_demo<span class="op">.</span>ExtendAllLegs<span class="op">(</span>robot_joint_cmd<span class="op">,</span>now_time<span class="op">,*</span>robot_data<span class="op">);</span>  <span class="co">// Raise</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span><span class="op">(</span>time_tick <span class="op">==</span> <span class="dv">6000</span><span class="op">){</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  robot_set_up_demo<span class="op">.</span>GetInitData<span class="op">(</span>robot_data<span class="op">-&gt;</span>joint_data<span class="op">,</span>now_time<span class="op">);</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span><span class="op">(</span>time_tick <span class="op">&gt;=</span> <span class="dv">6000</span> <span class="op">&amp;&amp;</span> time_tick <span class="op">&lt;</span> <span class="dv">8000</span><span class="op">){</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>  robot_set_up_demo<span class="op">.</span>LowerAllLegs<span class="op">(</span>robot_joint_cmd<span class="op">,</span>now_time<span class="op">,*</span>robot_data<span class="op">);</span>   <span class="co">// Lower</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span><span class="op">(</span>time_tick <span class="op">==</span> <span class="dv">8000</span><span class="op">){</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>  robot_set_up_demo<span class="op">.</span>GetInitData<span class="op">(</span>robot_data<span class="op">-&gt;</span>joint_data<span class="op">,</span>now_time<span class="op">);</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span><span class="op">(</span>time_tick <span class="op">&gt;=</span> <span class="dv">8000</span> <span class="op">&amp;&amp;</span> time_tick <span class="op">&lt;</span> <span class="dv">10000</span><span class="op">){</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>  robot_set_up_demo<span class="op">.</span>StandUp<span class="op">(</span>robot_joint_cmd<span class="op">,</span>now_time<span class="op">,*</span>robot_data<span class="op">);</span>  <span class="co">// Return to neutral</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span><span class="op">(</span>time_tick <span class="op">&gt;=</span> <span class="dv">10000</span><span class="op">){</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>  send_cmd<span class="op">-&gt;</span>ControlGet<span class="op">(</span>ROBOT<span class="op">);</span>  <span class="co">// Return control, enter damping</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>  <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span><span class="op">(</span><span class="va">is_message_updated_</span><span class="op">){</span></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>  send_cmd<span class="op">-&gt;</span>SendCmd<span class="op">(</span>robot_joint_cmd<span class="op">);</span>  <span class="co">// Send commands to robot</span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<hr>
+</section>
+</section>
+</section>
+<section id="step-2-upload-code-to-robot" class="level2">
+<h2 class="anchored" data-anchor-id="step-2-upload-code-to-robot">Step 2: Upload Code to Robot</h2>
+<section id="copy-files-to-robot" class="level3">
+<h3 class="anchored" data-anchor-id="copy-files-to-robot">2.1 Copy Files to Robot</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Upload header file</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> motionexample.h <span class="st">'ysc@192.168.2.1:~/Lite3_MotionSDK/include/'</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Upload implementation file</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> motionexample.cpp <span class="st">'ysc@192.168.2.1:~/Lite3_MotionSDK/src/'</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Upload main file</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> main.cpp <span class="st">'ysc@192.168.2.1:~/Lite3_MotionSDK/'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Or all in one command:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> motionexample.h <span class="st">'ysc@192.168.2.1:~/Lite3_MotionSDK/include/'</span> <span class="kw">&amp;&amp;</span> <span class="dt">\</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> motionexample.cpp <span class="st">'ysc@192.168.2.1:~/Lite3_MotionSDK/src/'</span> <span class="kw">&amp;&amp;</span> <span class="dt">\</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> main.cpp <span class="st">'ysc@192.168.2.1:~/Lite3_MotionSDK/'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="verify-files-were-copied" class="level3">
+<h3 class="anchored" data-anchor-id="verify-files-were-copied">2.2 Verify Files Were Copied</h3>
+<p>SSH into the robot and check:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> ysc@192.168.2.1</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-la</span> ~/Lite3_MotionSDK/</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-la</span> ~/Lite3_MotionSDK/include/</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-la</span> ~/Lite3_MotionSDK/src/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<hr>
+</section>
+</section>
+<section id="step-3-compile-the-code" class="level2">
+<h2 class="anchored" data-anchor-id="step-3-compile-the-code">Step 3: Compile the Code</h2>
+<section id="navigate-to-build-directory" class="level3">
+<h3 class="anchored" data-anchor-id="navigate-to-build-directory">3.1 Navigate to Build Directory</h3>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> ysc@192.168.2.1</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/Lite3_MotionSDK/build</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="build" class="level3">
+<h3 class="anchored" data-anchor-id="build">3.2 Build</h3>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compile</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-j</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Expected output:</p>
+<pre><code>Scanning dependencies of target Lite_motion
+[ 33%] Building CXX object CMakeFiles/Lite_motion.dir/main.cpp.o
+[ 66%] Building CXX object CMakeFiles/Lite_motion.dir/src/motionexample.cpp.o
+[100%] Linking CXX executable Lite_motion
+[100%] Built target Lite_motion</code></pre>
+</section>
+<section id="if-build-directory-doesnt-exist" class="level3">
+<h3 class="anchored" data-anchor-id="if-build-directory-doesnt-exist">3.3 If Build Directory Doesn’t Exist</h3>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/Lite3_MotionSDK</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> build</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> build</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cmake</span> .. <span class="at">-DBUILD_PLATFORM</span><span class="op">=</span>arm</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-j</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<hr>
+</section>
+</section>
+<section id="step-4-execute-the-program" class="level2">
+<h2 class="anchored" data-anchor-id="step-4-execute-the-program">Step 4: Execute the Program</h2>
+<section id="run-the-demo" class="level3">
+<h3 class="anchored" data-anchor-id="run-the-demo">4.1 Run the Demo</h3>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/Lite3_MotionSDK/build</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./Lite_motion</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="expected-behavior" class="level3">
+<h3 class="anchored" data-anchor-id="expected-behavior">4.2 Expected Behavior</h3>
+<p>The robot will execute this sequence:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Time (s)</th>
+<th>Action</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0-1</td>
+<td>PreStandUp</td>
+<td>Draw legs in, prepare to stand</td>
+</tr>
+<tr class="even">
+<td>1-4</td>
+<td>StandUp</td>
+<td>Stand to neutral position</td>
+</tr>
+<tr class="odd">
+<td>4-6</td>
+<td>ExtendAllLegs</td>
+<td>Extend legs, raise body higher</td>
+</tr>
+<tr class="even">
+<td>6-8</td>
+<td>LowerAllLegs</td>
+<td>Lower legs, crouch down</td>
+</tr>
+<tr class="odd">
+<td>8-10</td>
+<td>StandUp</td>
+<td>Return to neutral position</td>
+</tr>
+<tr class="even">
+<td>10+</td>
+<td>Damping</td>
+<td>Return control, enter damping mode</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="stop-the-program" class="level3">
+<h3 class="anchored" data-anchor-id="stop-the-program">4.3 Stop the Program</h3>
+<p>Press <code>Ctrl+C</code> to stop execution (if needed before completion).</p>
+<hr>
+</section>
+</section>
+<section id="understanding-joint-angles" class="level2">
+<h2 class="anchored" data-anchor-id="understanding-joint-angles">Understanding Joint Angles</h2>
+<section id="coordinate-system" class="level3">
+<h3 class="anchored" data-anchor-id="coordinate-system">Coordinate System</h3>
+<ul>
+<li><strong>HipX (joint 0)</strong>: Rotation around X-axis (0° = neutral)</li>
+<li><strong>HipY (joint 1)</strong>: Thigh angle (-70° = tucked, -42° = standing, -25° = extended, -55° = lowered)</li>
+<li><strong>Knee (joint 2)</strong>: Knee angle (150° = tucked, 78° = standing, 45° = extended, 100° = lowered)</li>
+</ul>
+</section>
+<section id="joint-mapping" class="level3">
+<h3 class="anchored" data-anchor-id="joint-mapping">Joint Mapping</h3>
+<pre><code>Leg indices: FL=0, FR=1, HL=2, HR=3
+Joint indices per leg: HipX=0, HipY=1, Knee=2
+Array index = leg * 3 + joint
+
+Example:
+- FL HipY = 0 * 3 + 1 = index 1
+- FR Knee = 1 * 3 + 2 = index 5
+- HL HipX = 2 * 3 + 0 = index 6</code></pre>
+<hr>
+</section>
+</section>
+<section id="troubleshooting" class="level2">
+<h2 class="anchored" data-anchor-id="troubleshooting">Troubleshooting</h2>
+<section id="cannot-bind-the-socket-error" class="level3">
+<h3 class="anchored" data-anchor-id="cannot-bind-the-socket-error">“Cannot bind the socket” Error</h3>
+<p>This means the UDP port is already in use. Make sure no other instance is running:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> ysc@192.168.2.1</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ps</span> aux <span class="kw">|</span> <span class="fu">grep</span> Lite_motion</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="bu">kill</span> <span class="at">-9</span> <span class="op">&lt;</span>PID<span class="op">&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="robot-falls-over" class="level3">
+<h3 class="anchored" data-anchor-id="robot-falls-over">Robot Falls Over</h3>
+<p>Check that the angle values in ExtendAllLegs and LowerAllLegs are correct. The values may need to be swapped depending on robot orientation.</p>
+</section>
+<section id="build-errors" class="level3">
+<h3 class="anchored" data-anchor-id="build-errors">Build Errors</h3>
+<p>If you see compilation errors, check: 1. All quotes are properly formatted in the files 2. Include statements have proper quotes: <code>#include "filename.h"</code> 3. Function declarations match implementations</p>
+<hr>
+</section>
+</section>
+<section id="quick-reference" class="level2">
+<h2 class="anchored" data-anchor-id="quick-reference">Quick Reference</h2>
+<section id="one-line-build-and-run" class="level3">
+<h3 class="anchored" data-anchor-id="one-line-build-and-run">One-Line Build and Run</h3>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> ysc@192.168.2.1 <span class="st">"cd ~/Lite3_MotionSDK/build &amp;&amp; make -j &amp;&amp; ./Lite_motion"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="restore-original-files" class="level3">
+<h3 class="anchored" data-anchor-id="restore-original-files">Restore Original Files</h3>
+<div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> ysc@192.168.2.1 <span class="st">"cd ~/Lite3_MotionSDK &amp;&amp; git checkout -- ."</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="check-robot-motion-program" class="level3">
+<h3 class="anchored" data-anchor-id="check-robot-motion-program">Check Robot Motion Program</h3>
+<div class="sourceCode" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> ysc@192.168.2.1 <span class="st">"pgrep -a jy_exe"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<hr>
+</section>
+</section>
+<section id="summary-workflow" class="level2">
+<h2 class="anchored" data-anchor-id="summary-workflow">Summary Workflow</h2>
+<div class="sourceCode" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Copy from robot</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> <span class="st">'ysc@192.168.2.1:~/Lite3_MotionSDK/main.cpp'</span> .</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> <span class="st">'ysc@192.168.2.1:~/Lite3_MotionSDK/include/motionexample.h'</span> .</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> <span class="st">'ysc@192.168.2.1:~/Lite3_MotionSDK/src/motionexample.cpp'</span> .</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Edit files locally (use your editor)</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Upload to robot</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> motionexample.h <span class="st">'ysc@192.168.2.1:~/Lite3_MotionSDK/include/'</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> motionexample.cpp <span class="st">'ysc@192.168.2.1:~/Lite3_MotionSDK/src/'</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> main.cpp <span class="st">'ysc@192.168.2.1:~/Lite3_MotionSDK/'</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Build and run</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> ysc@192.168.2.1 <span class="st">"cd ~/Lite3_MotionSDK/build &amp;&amp; make -j &amp;&amp; ./Lite_motion"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<hr>
+<p><strong>Robot IP</strong>: 192.168.2.1<br>
+<strong>Username</strong>: ysc<br>
+<strong>Build Platform</strong>: ARM (aarch64)</p>
+<hr>
+</section>
+<section id="appendix-source-code" class="level2">
+<h2 class="anchored" data-anchor-id="appendix-source-code">Appendix: Source Code</h2>
+<section id="main.cpp" class="level3">
+<h3 class="anchored" data-anchor-id="main.cpp">main.cpp</h3>
+<div class="sourceCode" id="cb20"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@file</span><span class="co"> </span><span class="cv">main.cpp</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@author</span><span class="co"> your name (you</span><span class="an">@domain.com)</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@brief</span><span class="co"> </span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@version</span><span class="co"> </span><span class="cv">0.1</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@date</span><span class="co"> 2022-09-13 </span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@copyright</span><span class="co"> </span><span class="do">Copyright</span><span class="co"> </span><span class="do">(c)</span><span class="co"> </span><span class="do">2022</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">"udpsocket.hpp"</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">"udpserver.hpp"</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">"sender.h"</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">"dr_timer.h"</span></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">"receiver.h"</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">"motionexample.h"</span></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;iostream&gt;</span></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;time.h&gt;</span></span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;string.h&gt;</span></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a><span class="kw">using</span> <span class="kw">namespace</span> std<span class="op">;</span></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>  <span class="dt">bool</span> <span class="va">is_message_updated_</span> <span class="op">=</span> <span class="kw">false</span><span class="op">;</span> <span class="co">///&lt; Flag to check if message has been updated</span></span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>  <span class="co">/**</span></span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a><span class="co">   * </span><span class="an">@brief</span><span class="co"> Callback function to set message update flag</span></span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a><span class="co">   * </span></span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a><span class="co">   * </span><span class="an">@param</span><span class="co"> </span><span class="cv">code</span><span class="co"> The code indicating the type of message received</span></span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a><span class="co">   */</span></span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>  <span class="dt">void</span> OnMessageUpdate<span class="op">(</span><span class="dt">uint32_t</span> code<span class="op">){</span></span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span><span class="op">(</span>code <span class="op">==</span> <span class="bn">0x0906</span><span class="op">){</span></span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a>      <span class="va">is_message_updated_</span> <span class="op">=</span> <span class="kw">true</span><span class="op">;</span></span>
+<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span><span class="op">*</span> argv<span class="op">[]){</span></span>
+<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a>  DRTimer set_timer<span class="op">;</span></span>
+<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> now_time<span class="op">,</span>start_time<span class="op">;</span></span>
+<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a>  RobotCmd robot_joint_cmd<span class="op">;</span></span>
+<span id="cb20-37"><a href="#cb20-37" aria-hidden="true" tabindex="-1"></a>  memset<span class="op">(&amp;</span>robot_joint_cmd<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span>robot_joint_cmd<span class="op">));</span></span>
+<span id="cb20-38"><a href="#cb20-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-39"><a href="#cb20-39" aria-hidden="true" tabindex="-1"></a>  Sender<span class="op">*</span> send_cmd          <span class="op">=</span> <span class="kw">new</span> Sender<span class="op">(</span><span class="st">"192.168.1.120"</span><span class="op">,</span><span class="dv">43893</span><span class="op">);</span>              <span class="co">///&lt; Create send thread</span></span>
+<span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a>  Receiver<span class="op">*</span> robot_data_recv <span class="op">=</span> <span class="kw">new</span> Receiver<span class="op">();</span>                                 <span class="co">///&lt; Create a receive resolution</span></span>
+<span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a>  robot_data_recv<span class="op">-&gt;</span>RegisterCallBack<span class="op">(</span>OnMessageUpdate<span class="op">);</span></span>
+<span id="cb20-42"><a href="#cb20-42" aria-hidden="true" tabindex="-1"></a>  MotionExample robot_set_up_demo<span class="op">;</span>                                            <span class="co">///&lt; Demos for testing can be deleted by yourself</span></span>
+<span id="cb20-43"><a href="#cb20-43" aria-hidden="true" tabindex="-1"></a>  RobotData <span class="op">*</span>robot_data <span class="op">=</span> <span class="op">&amp;</span>robot_data_recv<span class="op">-&gt;</span>GetState<span class="op">();</span></span>
+<span id="cb20-44"><a href="#cb20-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-45"><a href="#cb20-45" aria-hidden="true" tabindex="-1"></a>  robot_data_recv<span class="op">-&gt;</span>StartWork<span class="op">();</span></span>
+<span id="cb20-46"><a href="#cb20-46" aria-hidden="true" tabindex="-1"></a>  set_timer<span class="op">.</span>TimeInit<span class="op">(</span><span class="dv">1</span><span class="op">);</span>                                                      <span class="co">///&lt; Timer initialization, input: cycle; Unit: ms</span></span>
+<span id="cb20-47"><a href="#cb20-47" aria-hidden="true" tabindex="-1"></a>  send_cmd<span class="op">-&gt;</span>RobotStateInit<span class="op">();</span>                                                 <span class="co">///&lt; Return all joints to zero and gain control</span></span>
+<span id="cb20-48"><a href="#cb20-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-49"><a href="#cb20-49" aria-hidden="true" tabindex="-1"></a>  start_time <span class="op">=</span> set_timer<span class="op">.</span>GetCurrentTime<span class="op">();</span>                                    <span class="co">///&lt; Obtain time for algorithm usage</span></span>
+<span id="cb20-50"><a href="#cb20-50" aria-hidden="true" tabindex="-1"></a>  robot_set_up_demo<span class="op">.</span>GetInitData<span class="op">(</span>robot_data<span class="op">-&gt;</span>joint_data<span class="op">,</span><span class="fl">0.000</span><span class="op">);</span>                <span class="co">///&lt; Obtain all joint states once before each stage (action)</span></span>
+<span id="cb20-51"><a href="#cb20-51" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-52"><a href="#cb20-52" aria-hidden="true" tabindex="-1"></a>  <span class="dt">int</span> time_tick <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb20-53"><a href="#cb20-53" aria-hidden="true" tabindex="-1"></a>  <span class="cf">while</span><span class="op">(</span><span class="dv">1</span><span class="op">){</span></span>
+<span id="cb20-54"><a href="#cb20-54" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>set_timer<span class="op">.</span>TimerInterrupt<span class="op">()</span> <span class="op">==</span> <span class="kw">true</span><span class="op">){</span>                                  <span class="co">///&lt; Time interrupt flag</span></span>
+<span id="cb20-55"><a href="#cb20-55" aria-hidden="true" tabindex="-1"></a>      <span class="cf">continue</span><span class="op">;</span></span>
+<span id="cb20-56"><a href="#cb20-56" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb20-57"><a href="#cb20-57" aria-hidden="true" tabindex="-1"></a>    now_time <span class="op">=</span> set_timer<span class="op">.</span>GetIntervalTime<span class="op">(</span>start_time<span class="op">);</span>                         <span class="co">///&lt; Get the current time</span></span>
+<span id="cb20-58"><a href="#cb20-58" aria-hidden="true" tabindex="-1"></a>    time_tick<span class="op">++;</span></span>
+<span id="cb20-59"><a href="#cb20-59" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span><span class="op">(</span>time_tick <span class="op">&lt;</span> <span class="dv">1000</span><span class="op">){</span></span>
+<span id="cb20-60"><a href="#cb20-60" aria-hidden="true" tabindex="-1"></a>      robot_set_up_demo<span class="op">.</span>PreStandUp<span class="op">(</span>robot_joint_cmd<span class="op">,</span>now_time<span class="op">,*</span>robot_data<span class="op">);</span>     <span class="co">///&lt; Stand up and prepare for action</span></span>
+<span id="cb20-61"><a href="#cb20-61" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb20-62"><a href="#cb20-62" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span><span class="op">(</span>time_tick <span class="op">==</span> <span class="dv">1000</span><span class="op">){</span></span>
+<span id="cb20-63"><a href="#cb20-63" aria-hidden="true" tabindex="-1"></a>      robot_set_up_demo<span class="op">.</span>GetInitData<span class="op">(</span>robot_data<span class="op">-&gt;</span>joint_data<span class="op">,</span>now_time<span class="op">);</span>         <span class="co">///&lt; Obtain all joint states once before each stage (action)</span></span>
+<span id="cb20-64"><a href="#cb20-64" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb20-65"><a href="#cb20-65" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span><span class="op">(</span>time_tick <span class="op">&gt;=</span> <span class="dv">1000</span> <span class="op">&amp;&amp;</span> time_tick <span class="op">&lt;</span> <span class="dv">4000</span><span class="op">){</span></span>
+<span id="cb20-66"><a href="#cb20-66" aria-hidden="true" tabindex="-1"></a>      robot_set_up_demo<span class="op">.</span>StandUp<span class="op">(</span>robot_joint_cmd<span class="op">,</span>now_time<span class="op">,*</span>robot_data<span class="op">);</span>        <span class="co">///&lt; Full stand up (neutral position)</span></span>
+<span id="cb20-67"><a href="#cb20-67" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb20-68"><a href="#cb20-68" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span><span class="op">(</span>time_tick <span class="op">==</span> <span class="dv">4000</span><span class="op">){</span></span>
+<span id="cb20-69"><a href="#cb20-69" aria-hidden="true" tabindex="-1"></a>      robot_set_up_demo<span class="op">.</span>GetInitData<span class="op">(</span>robot_data<span class="op">-&gt;</span>joint_data<span class="op">,</span>now_time<span class="op">);</span>         <span class="co">///&lt; Record neutral position</span></span>
+<span id="cb20-70"><a href="#cb20-70" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb20-71"><a href="#cb20-71" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span><span class="op">(</span>time_tick <span class="op">&gt;=</span> <span class="dv">4000</span> <span class="op">&amp;&amp;</span> time_tick <span class="op">&lt;</span> <span class="dv">6000</span><span class="op">){</span></span>
+<span id="cb20-72"><a href="#cb20-72" aria-hidden="true" tabindex="-1"></a>      robot_set_up_demo<span class="op">.</span>ExtendAllLegs<span class="op">(</span>robot_joint_cmd<span class="op">,</span>now_time<span class="op">,*</span>robot_data<span class="op">);</span>   <span class="co">///&lt; Extend all 4 legs (raise higher)</span></span>
+<span id="cb20-73"><a href="#cb20-73" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb20-74"><a href="#cb20-74" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span><span class="op">(</span>time_tick <span class="op">==</span> <span class="dv">6000</span><span class="op">){</span></span>
+<span id="cb20-75"><a href="#cb20-75" aria-hidden="true" tabindex="-1"></a>      robot_set_up_demo<span class="op">.</span>GetInitData<span class="op">(</span>robot_data<span class="op">-&gt;</span>joint_data<span class="op">,</span>now_time<span class="op">);</span>         <span class="co">///&lt; Record extended position</span></span>
+<span id="cb20-76"><a href="#cb20-76" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb20-77"><a href="#cb20-77" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span><span class="op">(</span>time_tick <span class="op">&gt;=</span> <span class="dv">6000</span> <span class="op">&amp;&amp;</span> time_tick <span class="op">&lt;</span> <span class="dv">8000</span><span class="op">){</span></span>
+<span id="cb20-78"><a href="#cb20-78" aria-hidden="true" tabindex="-1"></a>      robot_set_up_demo<span class="op">.</span>LowerAllLegs<span class="op">(</span>robot_joint_cmd<span class="op">,</span>now_time<span class="op">,*</span>robot_data<span class="op">);</span>    <span class="co">///&lt; Lower all 4 legs (closer to ground)</span></span>
+<span id="cb20-79"><a href="#cb20-79" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb20-80"><a href="#cb20-80" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span><span class="op">(</span>time_tick <span class="op">==</span> <span class="dv">8000</span><span class="op">){</span></span>
+<span id="cb20-81"><a href="#cb20-81" aria-hidden="true" tabindex="-1"></a>      robot_set_up_demo<span class="op">.</span>GetInitData<span class="op">(</span>robot_data<span class="op">-&gt;</span>joint_data<span class="op">,</span>now_time<span class="op">);</span>         <span class="co">///&lt; Record lowered position</span></span>
+<span id="cb20-82"><a href="#cb20-82" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb20-83"><a href="#cb20-83" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span><span class="op">(</span>time_tick <span class="op">&gt;=</span> <span class="dv">8000</span> <span class="op">&amp;&amp;</span> time_tick <span class="op">&lt;</span> <span class="dv">10000</span><span class="op">){</span></span>
+<span id="cb20-84"><a href="#cb20-84" aria-hidden="true" tabindex="-1"></a>      robot_set_up_demo<span class="op">.</span>StandUp<span class="op">(</span>robot_joint_cmd<span class="op">,</span>now_time<span class="op">,*</span>robot_data<span class="op">);</span>         <span class="co">///&lt; Return to neutral position</span></span>
+<span id="cb20-85"><a href="#cb20-85" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb20-86"><a href="#cb20-86" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span><span class="op">(</span>time_tick <span class="op">&gt;=</span> <span class="dv">10000</span><span class="op">){</span></span>
+<span id="cb20-87"><a href="#cb20-87" aria-hidden="true" tabindex="-1"></a>      send_cmd<span class="op">-&gt;</span>ControlGet<span class="op">(</span>ROBOT<span class="op">);</span>                                            <span class="co">///&lt; Return the control right, input: ROBOT: Original algorithm control of the robot .  SDK: SDK control PS: over 50ms, no data set sent_ Send (cmd), you will lose control, you need to resend to obtain control</span></span>
+<span id="cb20-88"><a href="#cb20-88" aria-hidden="true" tabindex="-1"></a>      <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb20-89"><a href="#cb20-89" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb20-90"><a href="#cb20-90" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span><span class="op">(</span><span class="va">is_message_updated_</span><span class="op">){</span></span>
+<span id="cb20-91"><a href="#cb20-91" aria-hidden="true" tabindex="-1"></a>      send_cmd<span class="op">-&gt;</span>SendCmd<span class="op">(</span>robot_joint_cmd<span class="op">);</span></span>
+<span id="cb20-92"><a href="#cb20-92" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb20-93"><a href="#cb20-93" aria-hidden="true" tabindex="-1"></a>    <span class="co">//cout &lt;&lt; robot_data-&gt;imu.acc_x &lt;&lt; endl;</span></span>
+<span id="cb20-94"><a href="#cb20-94" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb20-95"><a href="#cb20-95" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb20-96"><a href="#cb20-96" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="motionexample.cpp" class="level3">
+<h3 class="anchored" data-anchor-id="motionexample.cpp">motionexample.cpp</h3>
+<div class="sourceCode" id="cb21"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@file</span><span class="co"> </span><span class="cv">motionexample.cpp</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@author</span><span class="co"> ysc (www.deeprobotics.cn)</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@brief</span><span class="co"> </span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@version</span><span class="co"> </span><span class="cv">0.1</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@date</span><span class="co"> 2023-03-03 </span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@copyright</span><span class="co"> </span><span class="do">Copyright</span><span class="co"> </span><span class="do">(c)</span><span class="co"> </span><span class="do">2023</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">"motionexample.h"</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>Vec3 goal_angle_fl<span class="op">,</span> goal_angle_hl<span class="op">,</span> goal_angle_fr<span class="op">,</span> goal_angle_hr<span class="op">;</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>Vec3 init_angle_fl<span class="op">,</span> init_angle_fr<span class="op">,</span> init_angle_hl<span class="op">,</span> init_angle_hr<span class="op">;</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> init_time<span class="op">;</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@brief</span><span class="co"> Spend 1 s putting the robot's legs away and preparing to stand</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">cmd</span><span class="co"> Issue control command</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">time</span><span class="co"> Current timestamp</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">data_state</span><span class="co"> Real-time status data of robot</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> MotionExample<span class="op">::</span>PreStandUp<span class="op">(</span>RobotCmd <span class="op">&amp;</span>cmd<span class="op">,</span> <span class="dt">double</span> time<span class="op">,</span>RobotData <span class="op">&amp;</span>data_state<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> standup_time <span class="op">=</span> <span class="fl">1.0</span><span class="op">;</span></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> cycle_time <span class="op">=</span> <span class="fl">0.001</span><span class="op">;</span></span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>  goal_angle_fl <span class="op">&lt;&lt;</span> <span class="dv">0</span> <span class="op">*</span> kDegree2Radian<span class="op">,</span> <span class="op">-</span><span class="dv">70</span> <span class="op">*</span> kDegree2Radian<span class="op">,</span></span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>    <span class="dv">150</span> <span class="op">*</span> kDegree2Radian<span class="op">;</span></span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>  goal_angle_fr <span class="op">&lt;&lt;</span> <span class="dv">0</span> <span class="op">*</span> kDegree2Radian<span class="op">,</span> <span class="op">-</span><span class="dv">70</span> <span class="op">*</span> kDegree2Radian<span class="op">,</span></span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>    <span class="dv">150</span> <span class="op">*</span> kDegree2Radian<span class="op">;</span></span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>  goal_angle_hl <span class="op">&lt;&lt;</span> <span class="dv">0</span> <span class="op">*</span> kDegree2Radian<span class="op">,</span> <span class="op">-</span><span class="dv">70</span> <span class="op">*</span> kDegree2Radian<span class="op">,</span></span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>    <span class="dv">150</span> <span class="op">*</span> kDegree2Radian<span class="op">;</span></span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>  goal_angle_hr <span class="op">&lt;&lt;</span> <span class="dv">0</span> <span class="op">*</span> kDegree2Radian<span class="op">,</span> <span class="op">-</span><span class="dv">70</span> <span class="op">*</span> kDegree2Radian<span class="op">,</span></span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>    <span class="dv">150</span> <span class="op">*</span> kDegree2Radian<span class="op">;</span></span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="op">(</span>time <span class="op">&lt;=</span> init_time <span class="op">+</span> standup_time<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>    SwingToAngle<span class="op">(</span>init_angle_fl<span class="op">,</span> goal_angle_fl<span class="op">,</span> standup_time<span class="op">,</span> time <span class="op">-</span> init_time<span class="op">,</span></span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>                 cycle_time<span class="op">,</span> <span class="st">"FL"</span><span class="op">,</span> cmd<span class="op">,</span> data_state<span class="op">);</span></span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>    SwingToAngle<span class="op">(</span>init_angle_fr<span class="op">,</span> goal_angle_fr<span class="op">,</span> standup_time<span class="op">,</span> time <span class="op">-</span> init_time<span class="op">,</span></span>
+<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a>                 cycle_time<span class="op">,</span> <span class="st">"FR"</span><span class="op">,</span> cmd<span class="op">,</span>data_state<span class="op">);</span></span>
+<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a>    SwingToAngle<span class="op">(</span>init_angle_hl<span class="op">,</span> goal_angle_hl<span class="op">,</span> standup_time<span class="op">,</span> time <span class="op">-</span> init_time<span class="op">,</span></span>
+<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>                 cycle_time<span class="op">,</span> <span class="st">"HL"</span><span class="op">,</span> cmd<span class="op">,</span>data_state<span class="op">);</span></span>
+<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a>    SwingToAngle<span class="op">(</span>init_angle_hr<span class="op">,</span> goal_angle_hr<span class="op">,</span> standup_time<span class="op">,</span> time <span class="op">-</span> init_time<span class="op">,</span></span>
+<span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a>                 cycle_time<span class="op">,</span> <span class="st">"HR"</span><span class="op">,</span> cmd<span class="op">,</span>data_state<span class="op">);</span></span>
+<span id="cb21-39"><a href="#cb21-39" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb21-40"><a href="#cb21-40" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb21-41"><a href="#cb21-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-42"><a href="#cb21-42" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@brief</span><span class="co"> Spend 1.5s standing</span></span>
+<span id="cb21-43"><a href="#cb21-43" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">cmd</span><span class="co"> Issue control command</span></span>
+<span id="cb21-44"><a href="#cb21-44" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">time</span><span class="co"> Current timestamp</span></span>
+<span id="cb21-45"><a href="#cb21-45" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">data_state</span><span class="co"> Real-time status data of robot</span></span>
+<span id="cb21-46"><a href="#cb21-46" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> MotionExample<span class="op">::</span>StandUp<span class="op">(</span>RobotCmd <span class="op">&amp;</span>cmd<span class="op">,</span> <span class="dt">double</span> time<span class="op">,</span>RobotData <span class="op">&amp;</span>data_state<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb21-47"><a href="#cb21-47" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> standup_time <span class="op">=</span> <span class="fl">1.5</span><span class="op">;</span></span>
+<span id="cb21-48"><a href="#cb21-48" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> cycle_time <span class="op">=</span> <span class="fl">0.001</span><span class="op">;</span></span>
+<span id="cb21-49"><a href="#cb21-49" aria-hidden="true" tabindex="-1"></a>    goal_angle_fl <span class="op">&lt;&lt;</span> <span class="dv">0</span> <span class="op">*</span> kDegree2Radian<span class="op">,</span> <span class="op">-</span><span class="dv">42</span> <span class="op">*</span> kDegree2Radian<span class="op">,</span></span>
+<span id="cb21-50"><a href="#cb21-50" aria-hidden="true" tabindex="-1"></a>      <span class="dv">78</span> <span class="op">*</span> kDegree2Radian<span class="op">;</span></span>
+<span id="cb21-51"><a href="#cb21-51" aria-hidden="true" tabindex="-1"></a>  goal_angle_fr <span class="op">&lt;&lt;</span> <span class="dv">0</span> <span class="op">*</span> kDegree2Radian<span class="op">,</span> <span class="op">-</span><span class="dv">42</span> <span class="op">*</span> kDegree2Radian<span class="op">,</span></span>
+<span id="cb21-52"><a href="#cb21-52" aria-hidden="true" tabindex="-1"></a>      <span class="dv">78</span> <span class="op">*</span> kDegree2Radian<span class="op">;</span></span>
+<span id="cb21-53"><a href="#cb21-53" aria-hidden="true" tabindex="-1"></a>  goal_angle_hl <span class="op">&lt;&lt;</span> <span class="dv">0</span> <span class="op">*</span> kDegree2Radian<span class="op">,</span> <span class="op">-</span><span class="dv">42</span> <span class="op">*</span> kDegree2Radian<span class="op">,</span></span>
+<span id="cb21-54"><a href="#cb21-54" aria-hidden="true" tabindex="-1"></a>      <span class="dv">78</span> <span class="op">*</span> kDegree2Radian<span class="op">;</span></span>
+<span id="cb21-55"><a href="#cb21-55" aria-hidden="true" tabindex="-1"></a>  goal_angle_hr <span class="op">&lt;&lt;</span> <span class="dv">0</span> <span class="op">*</span> kDegree2Radian<span class="op">,</span> <span class="op">-</span><span class="dv">42</span> <span class="op">*</span> kDegree2Radian<span class="op">,</span></span>
+<span id="cb21-56"><a href="#cb21-56" aria-hidden="true" tabindex="-1"></a>      <span class="dv">78</span> <span class="op">*</span> kDegree2Radian<span class="op">;</span></span>
+<span id="cb21-57"><a href="#cb21-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-58"><a href="#cb21-58" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="op">(</span>time <span class="op">&lt;=</span> init_time <span class="op">+</span> standup_time<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb21-59"><a href="#cb21-59" aria-hidden="true" tabindex="-1"></a>    SwingToAngle<span class="op">(</span>init_angle_fl<span class="op">,</span> goal_angle_fl<span class="op">,</span> standup_time<span class="op">,</span> time <span class="op">-</span> init_time<span class="op">,</span></span>
+<span id="cb21-60"><a href="#cb21-60" aria-hidden="true" tabindex="-1"></a>                 cycle_time<span class="op">,</span> <span class="st">"FL"</span><span class="op">,</span> cmd<span class="op">,</span> data_state<span class="op">);</span></span>
+<span id="cb21-61"><a href="#cb21-61" aria-hidden="true" tabindex="-1"></a>    SwingToAngle<span class="op">(</span>init_angle_fr<span class="op">,</span> goal_angle_fr<span class="op">,</span> standup_time<span class="op">,</span> time <span class="op">-</span> init_time<span class="op">,</span></span>
+<span id="cb21-62"><a href="#cb21-62" aria-hidden="true" tabindex="-1"></a>                 cycle_time<span class="op">,</span> <span class="st">"FR"</span><span class="op">,</span> cmd<span class="op">,</span>data_state<span class="op">);</span></span>
+<span id="cb21-63"><a href="#cb21-63" aria-hidden="true" tabindex="-1"></a>    SwingToAngle<span class="op">(</span>init_angle_hl<span class="op">,</span> goal_angle_hl<span class="op">,</span> standup_time<span class="op">,</span> time <span class="op">-</span> init_time<span class="op">,</span></span>
+<span id="cb21-64"><a href="#cb21-64" aria-hidden="true" tabindex="-1"></a>                 cycle_time<span class="op">,</span> <span class="st">"HL"</span><span class="op">,</span> cmd<span class="op">,</span>data_state<span class="op">);</span></span>
+<span id="cb21-65"><a href="#cb21-65" aria-hidden="true" tabindex="-1"></a>    SwingToAngle<span class="op">(</span>init_angle_hr<span class="op">,</span> goal_angle_hr<span class="op">,</span> standup_time<span class="op">,</span> time <span class="op">-</span> init_time<span class="op">,</span></span>
+<span id="cb21-66"><a href="#cb21-66" aria-hidden="true" tabindex="-1"></a>                 cycle_time<span class="op">,</span> <span class="st">"HR"</span><span class="op">,</span> cmd<span class="op">,</span>data_state<span class="op">);</span></span>
+<span id="cb21-67"><a href="#cb21-67" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span><span class="cf">else</span><span class="op">{</span></span>
+<span id="cb21-68"><a href="#cb21-68" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">12</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb21-69"><a href="#cb21-69" aria-hidden="true" tabindex="-1"></a>      cmd<span class="op">.</span>joint_cmd<span class="op">[</span>i<span class="op">].</span>torque <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-70"><a href="#cb21-70" aria-hidden="true" tabindex="-1"></a>      cmd<span class="op">.</span>joint_cmd<span class="op">[</span>i<span class="op">].</span>kp <span class="op">=</span> <span class="dv">80</span><span class="op">;</span></span>
+<span id="cb21-71"><a href="#cb21-71" aria-hidden="true" tabindex="-1"></a>      cmd<span class="op">.</span>joint_cmd<span class="op">[</span>i<span class="op">].</span>kd <span class="op">=</span> <span class="fl">0.7</span><span class="op">;</span></span>
+<span id="cb21-72"><a href="#cb21-72" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb21-73"><a href="#cb21-73" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">4</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb21-74"><a href="#cb21-74" aria-hidden="true" tabindex="-1"></a>      cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span><span class="op">*</span>i<span class="op">].</span>position <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-75"><a href="#cb21-75" aria-hidden="true" tabindex="-1"></a>      cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span><span class="op">*</span>i<span class="op">+</span><span class="dv">1</span><span class="op">].</span>position <span class="op">=</span> <span class="op">-</span><span class="dv">42</span> <span class="op">*</span> kDegree2Radian<span class="op">;</span></span>
+<span id="cb21-76"><a href="#cb21-76" aria-hidden="true" tabindex="-1"></a>      cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span><span class="op">*</span>i<span class="op">+</span><span class="dv">2</span><span class="op">].</span>position <span class="op">=</span> <span class="dv">78</span> <span class="op">*</span> kDegree2Radian<span class="op">;</span></span>
+<span id="cb21-77"><a href="#cb21-77" aria-hidden="true" tabindex="-1"></a>      cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span><span class="op">*</span>i<span class="op">].</span>velocity <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-78"><a href="#cb21-78" aria-hidden="true" tabindex="-1"></a>      cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span><span class="op">*</span>i<span class="op">+</span><span class="dv">1</span><span class="op">].</span>velocity <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-79"><a href="#cb21-79" aria-hidden="true" tabindex="-1"></a>      cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span><span class="op">*</span>i<span class="op">+</span><span class="dv">2</span><span class="op">].</span>velocity <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-80"><a href="#cb21-80" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb21-81"><a href="#cb21-81" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb21-82"><a href="#cb21-82" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb21-83"><a href="#cb21-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-84"><a href="#cb21-84" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@brief</span><span class="co"> Extend all 4 legs to raise the robot higher</span></span>
+<span id="cb21-85"><a href="#cb21-85" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">cmd</span><span class="co"> Issue control command</span></span>
+<span id="cb21-86"><a href="#cb21-86" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">time</span><span class="co"> Current timestamp</span></span>
+<span id="cb21-87"><a href="#cb21-87" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">data_state</span><span class="co"> Real-time status data of robot</span></span>
+<span id="cb21-88"><a href="#cb21-88" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> MotionExample<span class="op">::</span>ExtendAllLegs<span class="op">(</span>RobotCmd <span class="op">&amp;</span>cmd<span class="op">,</span> <span class="dt">double</span> time<span class="op">,</span> RobotData <span class="op">&amp;</span>data_state<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb21-89"><a href="#cb21-89" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> extend_time <span class="op">=</span> <span class="fl">1.0</span><span class="op">;</span>  <span class="co">// 1 second to extend</span></span>
+<span id="cb21-90"><a href="#cb21-90" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> cycle_time <span class="op">=</span> <span class="fl">0.001</span><span class="op">;</span></span>
+<span id="cb21-91"><a href="#cb21-91" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-92"><a href="#cb21-92" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Goal angles for extending all legs (raising robot higher)</span></span>
+<span id="cb21-93"><a href="#cb21-93" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Standing position: HipY=-42, Knee=78</span></span>
+<span id="cb21-94"><a href="#cb21-94" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Extended position: HipY=-25 (thigh lower/rotated down), Knee=45 (leg straighter)</span></span>
+<span id="cb21-95"><a href="#cb21-95" aria-hidden="true" tabindex="-1"></a>  Vec3 goal_angle_extend<span class="op">;</span></span>
+<span id="cb21-96"><a href="#cb21-96" aria-hidden="true" tabindex="-1"></a>  goal_angle_extend <span class="op">&lt;&lt;</span> <span class="dv">0</span> <span class="op">*</span> kDegree2Radian<span class="op">,</span> <span class="op">-</span><span class="dv">25</span> <span class="op">*</span> kDegree2Radian<span class="op">,</span> <span class="dv">45</span> <span class="op">*</span> kDegree2Radian<span class="op">;</span></span>
+<span id="cb21-97"><a href="#cb21-97" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-98"><a href="#cb21-98" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="op">(</span>time <span class="op">&lt;=</span> init_time <span class="op">+</span> extend_time<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb21-99"><a href="#cb21-99" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Extend all 4 legs</span></span>
+<span id="cb21-100"><a href="#cb21-100" aria-hidden="true" tabindex="-1"></a>    SwingToAngle<span class="op">(</span>init_angle_fl<span class="op">,</span> goal_angle_extend<span class="op">,</span> extend_time<span class="op">,</span> time <span class="op">-</span> init_time<span class="op">,</span></span>
+<span id="cb21-101"><a href="#cb21-101" aria-hidden="true" tabindex="-1"></a>                 cycle_time<span class="op">,</span> <span class="st">"FL"</span><span class="op">,</span> cmd<span class="op">,</span> data_state<span class="op">);</span></span>
+<span id="cb21-102"><a href="#cb21-102" aria-hidden="true" tabindex="-1"></a>    SwingToAngle<span class="op">(</span>init_angle_fr<span class="op">,</span> goal_angle_extend<span class="op">,</span> extend_time<span class="op">,</span> time <span class="op">-</span> init_time<span class="op">,</span></span>
+<span id="cb21-103"><a href="#cb21-103" aria-hidden="true" tabindex="-1"></a>                 cycle_time<span class="op">,</span> <span class="st">"FR"</span><span class="op">,</span> cmd<span class="op">,</span> data_state<span class="op">);</span></span>
+<span id="cb21-104"><a href="#cb21-104" aria-hidden="true" tabindex="-1"></a>    SwingToAngle<span class="op">(</span>init_angle_hl<span class="op">,</span> goal_angle_extend<span class="op">,</span> extend_time<span class="op">,</span> time <span class="op">-</span> init_time<span class="op">,</span></span>
+<span id="cb21-105"><a href="#cb21-105" aria-hidden="true" tabindex="-1"></a>                 cycle_time<span class="op">,</span> <span class="st">"HL"</span><span class="op">,</span> cmd<span class="op">,</span> data_state<span class="op">);</span></span>
+<span id="cb21-106"><a href="#cb21-106" aria-hidden="true" tabindex="-1"></a>    SwingToAngle<span class="op">(</span>init_angle_hr<span class="op">,</span> goal_angle_extend<span class="op">,</span> extend_time<span class="op">,</span> time <span class="op">-</span> init_time<span class="op">,</span></span>
+<span id="cb21-107"><a href="#cb21-107" aria-hidden="true" tabindex="-1"></a>                 cycle_time<span class="op">,</span> <span class="st">"HR"</span><span class="op">,</span> cmd<span class="op">,</span> data_state<span class="op">);</span></span>
+<span id="cb21-108"><a href="#cb21-108" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb21-109"><a href="#cb21-109" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Hold the extended position for all legs</span></span>
+<span id="cb21-110"><a href="#cb21-110" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> leg_side <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> leg_side <span class="op">&lt;</span> <span class="dv">4</span><span class="op">;</span> leg_side<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb21-111"><a href="#cb21-111" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">3</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb21-112"><a href="#cb21-112" aria-hidden="true" tabindex="-1"></a>        cmd<span class="op">.</span>joint_cmd<span class="op">[</span>leg_side <span class="op">*</span> <span class="dv">3</span> <span class="op">+</span> i<span class="op">].</span>kp <span class="op">=</span> <span class="dv">80</span><span class="op">;</span></span>
+<span id="cb21-113"><a href="#cb21-113" aria-hidden="true" tabindex="-1"></a>        cmd<span class="op">.</span>joint_cmd<span class="op">[</span>leg_side <span class="op">*</span> <span class="dv">3</span> <span class="op">+</span> i<span class="op">].</span>kd <span class="op">=</span> <span class="fl">0.7</span><span class="op">;</span></span>
+<span id="cb21-114"><a href="#cb21-114" aria-hidden="true" tabindex="-1"></a>        cmd<span class="op">.</span>joint_cmd<span class="op">[</span>leg_side <span class="op">*</span> <span class="dv">3</span> <span class="op">+</span> i<span class="op">].</span>torque <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-115"><a href="#cb21-115" aria-hidden="true" tabindex="-1"></a>      <span class="op">}</span></span>
+<span id="cb21-116"><a href="#cb21-116" aria-hidden="true" tabindex="-1"></a>      cmd<span class="op">.</span>joint_cmd<span class="op">[</span>leg_side <span class="op">*</span> <span class="dv">3</span><span class="op">].</span>position <span class="op">=</span> goal_angle_extend<span class="op">[</span><span class="dv">0</span><span class="op">];</span></span>
+<span id="cb21-117"><a href="#cb21-117" aria-hidden="true" tabindex="-1"></a>      cmd<span class="op">.</span>joint_cmd<span class="op">[</span>leg_side <span class="op">*</span> <span class="dv">3</span> <span class="op">+</span> <span class="dv">1</span><span class="op">].</span>position <span class="op">=</span> goal_angle_extend<span class="op">[</span><span class="dv">1</span><span class="op">];</span></span>
+<span id="cb21-118"><a href="#cb21-118" aria-hidden="true" tabindex="-1"></a>      cmd<span class="op">.</span>joint_cmd<span class="op">[</span>leg_side <span class="op">*</span> <span class="dv">3</span> <span class="op">+</span> <span class="dv">2</span><span class="op">].</span>position <span class="op">=</span> goal_angle_extend<span class="op">[</span><span class="dv">2</span><span class="op">];</span></span>
+<span id="cb21-119"><a href="#cb21-119" aria-hidden="true" tabindex="-1"></a>      cmd<span class="op">.</span>joint_cmd<span class="op">[</span>leg_side <span class="op">*</span> <span class="dv">3</span><span class="op">].</span>velocity <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-120"><a href="#cb21-120" aria-hidden="true" tabindex="-1"></a>      cmd<span class="op">.</span>joint_cmd<span class="op">[</span>leg_side <span class="op">*</span> <span class="dv">3</span> <span class="op">+</span> <span class="dv">1</span><span class="op">].</span>velocity <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-121"><a href="#cb21-121" aria-hidden="true" tabindex="-1"></a>      cmd<span class="op">.</span>joint_cmd<span class="op">[</span>leg_side <span class="op">*</span> <span class="dv">3</span> <span class="op">+</span> <span class="dv">2</span><span class="op">].</span>velocity <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-122"><a href="#cb21-122" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb21-123"><a href="#cb21-123" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb21-124"><a href="#cb21-124" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb21-125"><a href="#cb21-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-126"><a href="#cb21-126" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@brief</span><span class="co"> Lower all 4 legs to bring robot closer to ground</span></span>
+<span id="cb21-127"><a href="#cb21-127" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">cmd</span><span class="co"> Issue control command</span></span>
+<span id="cb21-128"><a href="#cb21-128" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">time</span><span class="co"> Current timestamp</span></span>
+<span id="cb21-129"><a href="#cb21-129" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">data_state</span><span class="co"> Real-time status data of robot</span></span>
+<span id="cb21-130"><a href="#cb21-130" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> MotionExample<span class="op">::</span>LowerAllLegs<span class="op">(</span>RobotCmd <span class="op">&amp;</span>cmd<span class="op">,</span> <span class="dt">double</span> time<span class="op">,</span> RobotData <span class="op">&amp;</span>data_state<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb21-131"><a href="#cb21-131" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> lower_time <span class="op">=</span> <span class="fl">1.0</span><span class="op">;</span>  <span class="co">// 1 second to lower</span></span>
+<span id="cb21-132"><a href="#cb21-132" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> cycle_time <span class="op">=</span> <span class="fl">0.001</span><span class="op">;</span></span>
+<span id="cb21-133"><a href="#cb21-133" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-134"><a href="#cb21-134" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Goal angles for lowering all legs (bringing robot closer to ground)</span></span>
+<span id="cb21-135"><a href="#cb21-135" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Standing position: HipY=-42, Knee=78</span></span>
+<span id="cb21-136"><a href="#cb21-136" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Lowered position: HipY=-55 (thigh higher/rotated up), Knee=100 (knee more bent)</span></span>
+<span id="cb21-137"><a href="#cb21-137" aria-hidden="true" tabindex="-1"></a>  Vec3 goal_angle_lower<span class="op">;</span></span>
+<span id="cb21-138"><a href="#cb21-138" aria-hidden="true" tabindex="-1"></a>  goal_angle_lower <span class="op">&lt;&lt;</span> <span class="dv">0</span> <span class="op">*</span> kDegree2Radian<span class="op">,</span> <span class="op">-</span><span class="dv">55</span> <span class="op">*</span> kDegree2Radian<span class="op">,</span> <span class="dv">100</span> <span class="op">*</span> kDegree2Radian<span class="op">;</span></span>
+<span id="cb21-139"><a href="#cb21-139" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-140"><a href="#cb21-140" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="op">(</span>time <span class="op">&lt;=</span> init_time <span class="op">+</span> lower_time<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb21-141"><a href="#cb21-141" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Lower all 4 legs</span></span>
+<span id="cb21-142"><a href="#cb21-142" aria-hidden="true" tabindex="-1"></a>    SwingToAngle<span class="op">(</span>init_angle_fl<span class="op">,</span> goal_angle_lower<span class="op">,</span> lower_time<span class="op">,</span> time <span class="op">-</span> init_time<span class="op">,</span></span>
+<span id="cb21-143"><a href="#cb21-143" aria-hidden="true" tabindex="-1"></a>                 cycle_time<span class="op">,</span> <span class="st">"FL"</span><span class="op">,</span> cmd<span class="op">,</span> data_state<span class="op">);</span></span>
+<span id="cb21-144"><a href="#cb21-144" aria-hidden="true" tabindex="-1"></a>    SwingToAngle<span class="op">(</span>init_angle_fr<span class="op">,</span> goal_angle_lower<span class="op">,</span> lower_time<span class="op">,</span> time <span class="op">-</span> init_time<span class="op">,</span></span>
+<span id="cb21-145"><a href="#cb21-145" aria-hidden="true" tabindex="-1"></a>                 cycle_time<span class="op">,</span> <span class="st">"FR"</span><span class="op">,</span> cmd<span class="op">,</span> data_state<span class="op">);</span></span>
+<span id="cb21-146"><a href="#cb21-146" aria-hidden="true" tabindex="-1"></a>    SwingToAngle<span class="op">(</span>init_angle_hl<span class="op">,</span> goal_angle_lower<span class="op">,</span> lower_time<span class="op">,</span> time <span class="op">-</span> init_time<span class="op">,</span></span>
+<span id="cb21-147"><a href="#cb21-147" aria-hidden="true" tabindex="-1"></a>                 cycle_time<span class="op">,</span> <span class="st">"HL"</span><span class="op">,</span> cmd<span class="op">,</span> data_state<span class="op">);</span></span>
+<span id="cb21-148"><a href="#cb21-148" aria-hidden="true" tabindex="-1"></a>    SwingToAngle<span class="op">(</span>init_angle_hr<span class="op">,</span> goal_angle_lower<span class="op">,</span> lower_time<span class="op">,</span> time <span class="op">-</span> init_time<span class="op">,</span></span>
+<span id="cb21-149"><a href="#cb21-149" aria-hidden="true" tabindex="-1"></a>                 cycle_time<span class="op">,</span> <span class="st">"HR"</span><span class="op">,</span> cmd<span class="op">,</span> data_state<span class="op">);</span></span>
+<span id="cb21-150"><a href="#cb21-150" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb21-151"><a href="#cb21-151" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Hold the lowered position for all legs</span></span>
+<span id="cb21-152"><a href="#cb21-152" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> leg_side <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> leg_side <span class="op">&lt;</span> <span class="dv">4</span><span class="op">;</span> leg_side<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb21-153"><a href="#cb21-153" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">3</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb21-154"><a href="#cb21-154" aria-hidden="true" tabindex="-1"></a>        cmd<span class="op">.</span>joint_cmd<span class="op">[</span>leg_side <span class="op">*</span> <span class="dv">3</span> <span class="op">+</span> i<span class="op">].</span>kp <span class="op">=</span> <span class="dv">80</span><span class="op">;</span></span>
+<span id="cb21-155"><a href="#cb21-155" aria-hidden="true" tabindex="-1"></a>        cmd<span class="op">.</span>joint_cmd<span class="op">[</span>leg_side <span class="op">*</span> <span class="dv">3</span> <span class="op">+</span> i<span class="op">].</span>kd <span class="op">=</span> <span class="fl">0.7</span><span class="op">;</span></span>
+<span id="cb21-156"><a href="#cb21-156" aria-hidden="true" tabindex="-1"></a>        cmd<span class="op">.</span>joint_cmd<span class="op">[</span>leg_side <span class="op">*</span> <span class="dv">3</span> <span class="op">+</span> i<span class="op">].</span>torque <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-157"><a href="#cb21-157" aria-hidden="true" tabindex="-1"></a>      <span class="op">}</span></span>
+<span id="cb21-158"><a href="#cb21-158" aria-hidden="true" tabindex="-1"></a>      cmd<span class="op">.</span>joint_cmd<span class="op">[</span>leg_side <span class="op">*</span> <span class="dv">3</span><span class="op">].</span>position <span class="op">=</span> goal_angle_lower<span class="op">[</span><span class="dv">0</span><span class="op">];</span></span>
+<span id="cb21-159"><a href="#cb21-159" aria-hidden="true" tabindex="-1"></a>      cmd<span class="op">.</span>joint_cmd<span class="op">[</span>leg_side <span class="op">*</span> <span class="dv">3</span> <span class="op">+</span> <span class="dv">1</span><span class="op">].</span>position <span class="op">=</span> goal_angle_lower<span class="op">[</span><span class="dv">1</span><span class="op">];</span></span>
+<span id="cb21-160"><a href="#cb21-160" aria-hidden="true" tabindex="-1"></a>      cmd<span class="op">.</span>joint_cmd<span class="op">[</span>leg_side <span class="op">*</span> <span class="dv">3</span> <span class="op">+</span> <span class="dv">2</span><span class="op">].</span>position <span class="op">=</span> goal_angle_lower<span class="op">[</span><span class="dv">2</span><span class="op">];</span></span>
+<span id="cb21-161"><a href="#cb21-161" aria-hidden="true" tabindex="-1"></a>      cmd<span class="op">.</span>joint_cmd<span class="op">[</span>leg_side <span class="op">*</span> <span class="dv">3</span><span class="op">].</span>velocity <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-162"><a href="#cb21-162" aria-hidden="true" tabindex="-1"></a>      cmd<span class="op">.</span>joint_cmd<span class="op">[</span>leg_side <span class="op">*</span> <span class="dv">3</span> <span class="op">+</span> <span class="dv">1</span><span class="op">].</span>velocity <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-163"><a href="#cb21-163" aria-hidden="true" tabindex="-1"></a>      cmd<span class="op">.</span>joint_cmd<span class="op">[</span>leg_side <span class="op">*</span> <span class="dv">3</span> <span class="op">+</span> <span class="dv">2</span><span class="op">].</span>velocity <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-164"><a href="#cb21-164" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb21-165"><a href="#cb21-165" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb21-166"><a href="#cb21-166" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb21-167"><a href="#cb21-167" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-168"><a href="#cb21-168" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@brief</span><span class="co"> Only the current moment and angle are recorded</span></span>
+<span id="cb21-169"><a href="#cb21-169" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">data</span><span class="co"> Current joint data</span></span>
+<span id="cb21-170"><a href="#cb21-170" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">time</span><span class="co"> Current timestamp</span></span>
+<span id="cb21-171"><a href="#cb21-171" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> MotionExample<span class="op">::</span>GetInitData<span class="op">(</span>LegData data<span class="op">,</span> <span class="dt">double</span> time<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb21-172"><a href="#cb21-172" aria-hidden="true" tabindex="-1"></a>  init_time <span class="op">=</span> time<span class="op">;</span></span>
+<span id="cb21-173"><a href="#cb21-173" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Only the current moment and angle are recorded</span></span>
+<span id="cb21-174"><a href="#cb21-174" aria-hidden="true" tabindex="-1"></a>  init_angle_fl<span class="op">[</span><span class="dv">0</span><span class="op">]</span> <span class="op">=</span> data<span class="op">.</span>fl_leg<span class="op">[</span><span class="dv">0</span><span class="op">].</span>position<span class="op">;</span></span>
+<span id="cb21-175"><a href="#cb21-175" aria-hidden="true" tabindex="-1"></a>  init_angle_fl<span class="op">[</span><span class="dv">1</span><span class="op">]</span> <span class="op">=</span> data<span class="op">.</span>fl_leg<span class="op">[</span><span class="dv">1</span><span class="op">].</span>position<span class="op">;</span></span>
+<span id="cb21-176"><a href="#cb21-176" aria-hidden="true" tabindex="-1"></a>  init_angle_fl<span class="op">[</span><span class="dv">2</span><span class="op">]</span> <span class="op">=</span> data<span class="op">.</span>fl_leg<span class="op">[</span><span class="dv">2</span><span class="op">].</span>position<span class="op">;</span></span>
+<span id="cb21-177"><a href="#cb21-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-178"><a href="#cb21-178" aria-hidden="true" tabindex="-1"></a>  init_angle_fr<span class="op">[</span><span class="dv">0</span><span class="op">]</span> <span class="op">=</span> data<span class="op">.</span>fr_leg<span class="op">[</span><span class="dv">0</span><span class="op">].</span>position<span class="op">;</span></span>
+<span id="cb21-179"><a href="#cb21-179" aria-hidden="true" tabindex="-1"></a>  init_angle_fr<span class="op">[</span><span class="dv">1</span><span class="op">]</span> <span class="op">=</span> data<span class="op">.</span>fr_leg<span class="op">[</span><span class="dv">1</span><span class="op">].</span>position<span class="op">;</span></span>
+<span id="cb21-180"><a href="#cb21-180" aria-hidden="true" tabindex="-1"></a>  init_angle_fr<span class="op">[</span><span class="dv">2</span><span class="op">]</span> <span class="op">=</span> data<span class="op">.</span>fr_leg<span class="op">[</span><span class="dv">2</span><span class="op">].</span>position<span class="op">;</span></span>
+<span id="cb21-181"><a href="#cb21-181" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-182"><a href="#cb21-182" aria-hidden="true" tabindex="-1"></a>  init_angle_hl<span class="op">[</span><span class="dv">0</span><span class="op">]</span> <span class="op">=</span> data<span class="op">.</span>hl_leg<span class="op">[</span><span class="dv">0</span><span class="op">].</span>position<span class="op">;</span></span>
+<span id="cb21-183"><a href="#cb21-183" aria-hidden="true" tabindex="-1"></a>  init_angle_hl<span class="op">[</span><span class="dv">1</span><span class="op">]</span> <span class="op">=</span> data<span class="op">.</span>hl_leg<span class="op">[</span><span class="dv">1</span><span class="op">].</span>position<span class="op">;</span></span>
+<span id="cb21-184"><a href="#cb21-184" aria-hidden="true" tabindex="-1"></a>  init_angle_hl<span class="op">[</span><span class="dv">2</span><span class="op">]</span> <span class="op">=</span> data<span class="op">.</span>hl_leg<span class="op">[</span><span class="dv">2</span><span class="op">].</span>position<span class="op">;</span></span>
+<span id="cb21-185"><a href="#cb21-185" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-186"><a href="#cb21-186" aria-hidden="true" tabindex="-1"></a>  init_angle_hr<span class="op">[</span><span class="dv">0</span><span class="op">]</span> <span class="op">=</span> data<span class="op">.</span>hr_leg<span class="op">[</span><span class="dv">0</span><span class="op">].</span>position<span class="op">;</span></span>
+<span id="cb21-187"><a href="#cb21-187" aria-hidden="true" tabindex="-1"></a>  init_angle_hr<span class="op">[</span><span class="dv">1</span><span class="op">]</span> <span class="op">=</span> data<span class="op">.</span>hr_leg<span class="op">[</span><span class="dv">1</span><span class="op">].</span>position<span class="op">;</span></span>
+<span id="cb21-188"><a href="#cb21-188" aria-hidden="true" tabindex="-1"></a>  init_angle_hr<span class="op">[</span><span class="dv">2</span><span class="op">]</span> <span class="op">=</span> data<span class="op">.</span>hr_leg<span class="op">[</span><span class="dv">2</span><span class="op">].</span>position<span class="op">;</span></span>
+<span id="cb21-189"><a href="#cb21-189" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb21-190"><a href="#cb21-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-191"><a href="#cb21-191" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@brief</span><span class="co"> Specifically achieve swinging one leg of the robot to a specified position within a specified time</span></span>
+<span id="cb21-192"><a href="#cb21-192" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">initial_angle</span><span class="co"> </span></span>
+<span id="cb21-193"><a href="#cb21-193" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">final_angle</span></span>
+<span id="cb21-194"><a href="#cb21-194" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">total_time</span></span>
+<span id="cb21-195"><a href="#cb21-195" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">run_time</span></span>
+<span id="cb21-196"><a href="#cb21-196" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">cycle_time</span><span class="co"> Control cycle, default is 1ms</span></span>
+<span id="cb21-197"><a href="#cb21-197" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">side</span><span class="co"> Control which leg, FL is the left front leg, FR is the right front leg, HL is the left and right leg, and HR is the right rear leg</span></span>
+<span id="cb21-198"><a href="#cb21-198" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">cmd</span><span class="co"> Issue control command</span></span>
+<span id="cb21-199"><a href="#cb21-199" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">data</span><span class="co"> Real-time status data of robot</span></span>
+<span id="cb21-200"><a href="#cb21-200" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> MotionExample<span class="op">::</span>SwingToAngle<span class="op">(</span>Vec3 initial_angle<span class="op">,</span> Vec3 final_angle<span class="op">,</span></span>
+<span id="cb21-201"><a href="#cb21-201" aria-hidden="true" tabindex="-1"></a>                                 <span class="dt">double</span> total_time<span class="op">,</span> <span class="dt">double</span> run_time<span class="op">,</span></span>
+<span id="cb21-202"><a href="#cb21-202" aria-hidden="true" tabindex="-1"></a>                                 <span class="dt">double</span> cycle_time<span class="op">,</span> string side<span class="op">,</span></span>
+<span id="cb21-203"><a href="#cb21-203" aria-hidden="true" tabindex="-1"></a>                                 RobotCmd <span class="op">&amp;</span>cmd<span class="op">,</span></span>
+<span id="cb21-204"><a href="#cb21-204" aria-hidden="true" tabindex="-1"></a>                                 RobotData <span class="op">&amp;</span>data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb21-205"><a href="#cb21-205" aria-hidden="true" tabindex="-1"></a>  Vec3 goal_angle<span class="op">;</span></span>
+<span id="cb21-206"><a href="#cb21-206" aria-hidden="true" tabindex="-1"></a>  Vec3 goal_angle_next<span class="op">;</span></span>
+<span id="cb21-207"><a href="#cb21-207" aria-hidden="true" tabindex="-1"></a>  Vec3 goal_angle_next2<span class="op">;</span></span>
+<span id="cb21-208"><a href="#cb21-208" aria-hidden="true" tabindex="-1"></a>  Vec3 goal_velocity<span class="op">;</span></span>
+<span id="cb21-209"><a href="#cb21-209" aria-hidden="true" tabindex="-1"></a>  <span class="dt">int</span> leg_side<span class="op">;</span></span>
+<span id="cb21-210"><a href="#cb21-210" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-211"><a href="#cb21-211" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="op">(</span>side <span class="op">==</span> <span class="st">"FL"</span><span class="op">)</span></span>
+<span id="cb21-212"><a href="#cb21-212" aria-hidden="true" tabindex="-1"></a>    leg_side <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-213"><a href="#cb21-213" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>side <span class="op">==</span> <span class="st">"FR"</span><span class="op">)</span></span>
+<span id="cb21-214"><a href="#cb21-214" aria-hidden="true" tabindex="-1"></a>    leg_side <span class="op">=</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb21-215"><a href="#cb21-215" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>side <span class="op">==</span> <span class="st">"HL"</span><span class="op">)</span></span>
+<span id="cb21-216"><a href="#cb21-216" aria-hidden="true" tabindex="-1"></a>    leg_side <span class="op">=</span> <span class="dv">2</span><span class="op">;</span></span>
+<span id="cb21-217"><a href="#cb21-217" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>side <span class="op">==</span> <span class="st">"HR"</span><span class="op">)</span></span>
+<span id="cb21-218"><a href="#cb21-218" aria-hidden="true" tabindex="-1"></a>    leg_side <span class="op">=</span> <span class="dv">3</span><span class="op">;</span></span>
+<span id="cb21-219"><a href="#cb21-219" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span></span>
+<span id="cb21-220"><a href="#cb21-220" aria-hidden="true" tabindex="-1"></a>    cout <span class="op">&lt;&lt;</span> <span class="st">"Leg Side Error!!!"</span> <span class="op">&lt;&lt;</span> endl<span class="op">;</span></span>
+<span id="cb21-221"><a href="#cb21-221" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-222"><a href="#cb21-222" aria-hidden="true" tabindex="-1"></a>  final_angle <span class="op">=</span> final_angle<span class="op">;</span></span>
+<span id="cb21-223"><a href="#cb21-223" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> j <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> j <span class="op">&lt;</span> <span class="dv">3</span><span class="op">;</span> j<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb21-224"><a href="#cb21-224" aria-hidden="true" tabindex="-1"></a>    CubicSpline<span class="op">(</span>initial_angle<span class="op">[</span>j<span class="op">],</span> <span class="dv">0</span><span class="op">,</span> <span class="op">(</span><span class="dt">double</span><span class="op">)</span>final_angle<span class="op">[</span>j<span class="op">],</span> <span class="dv">0</span><span class="op">,</span> run_time<span class="op">,</span></span>
+<span id="cb21-225"><a href="#cb21-225" aria-hidden="true" tabindex="-1"></a>                cycle_time<span class="op">,</span> total_time<span class="op">,</span> goal_angle<span class="op">[</span>j<span class="op">],</span> goal_angle_next<span class="op">[</span>j<span class="op">],</span></span>
+<span id="cb21-226"><a href="#cb21-226" aria-hidden="true" tabindex="-1"></a>                goal_angle_next2<span class="op">[</span>j<span class="op">]);</span></span>
+<span id="cb21-227"><a href="#cb21-227" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb21-228"><a href="#cb21-228" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-229"><a href="#cb21-229" aria-hidden="true" tabindex="-1"></a>  goal_velocity <span class="op">=</span> <span class="op">(</span>goal_angle_next <span class="op">-</span> goal_angle<span class="op">)</span> <span class="op">/</span> cycle_time<span class="op">;</span></span>
+<span id="cb21-230"><a href="#cb21-230" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-231"><a href="#cb21-231" aria-hidden="true" tabindex="-1"></a>  <span class="co">///&lt; The following two methods can be used to complete joint control. By default, position control mode is used, and hybrid control mode is supported</span></span>
+<span id="cb21-232"><a href="#cb21-232" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-233"><a href="#cb21-233" aria-hidden="true" tabindex="-1"></a>  <span class="co">///&lt; Joint pd control - position control method, namely, issuing kp, kd, goal_ angle，goal_ Vel, feedforward force tor=0, joint end completes joint pd control closed-loop</span></span>
+<span id="cb21-234"><a href="#cb21-234" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span><span class="op">(</span><span class="kw">true</span><span class="op">){</span></span>
+<span id="cb21-235"><a href="#cb21-235" aria-hidden="true" tabindex="-1"></a>    cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span> <span class="op">*</span> leg_side<span class="op">].</span>kp <span class="op">=</span> <span class="dv">60</span><span class="op">;</span></span>
+<span id="cb21-236"><a href="#cb21-236" aria-hidden="true" tabindex="-1"></a>    cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span> <span class="op">*</span> leg_side <span class="op">+</span> <span class="dv">1</span><span class="op">].</span>kp <span class="op">=</span> <span class="dv">60</span><span class="op">;</span></span>
+<span id="cb21-237"><a href="#cb21-237" aria-hidden="true" tabindex="-1"></a>    cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span> <span class="op">*</span> leg_side <span class="op">+</span> <span class="dv">2</span><span class="op">].</span>kp <span class="op">=</span> <span class="dv">60</span><span class="op">;</span></span>
+<span id="cb21-238"><a href="#cb21-238" aria-hidden="true" tabindex="-1"></a>    cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span> <span class="op">*</span> leg_side<span class="op">].</span>kd <span class="op">=</span> <span class="fl">0.7</span><span class="op">;</span></span>
+<span id="cb21-239"><a href="#cb21-239" aria-hidden="true" tabindex="-1"></a>    cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span> <span class="op">*</span> leg_side <span class="op">+</span> <span class="dv">1</span><span class="op">].</span>kd <span class="op">=</span> <span class="fl">0.7</span><span class="op">;</span></span>
+<span id="cb21-240"><a href="#cb21-240" aria-hidden="true" tabindex="-1"></a>    cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span> <span class="op">*</span> leg_side <span class="op">+</span> <span class="dv">2</span><span class="op">].</span>kd <span class="op">=</span> <span class="fl">0.7</span><span class="op">;</span></span>
+<span id="cb21-241"><a href="#cb21-241" aria-hidden="true" tabindex="-1"></a>    cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span> <span class="op">*</span> leg_side<span class="op">].</span>position <span class="op">=</span> goal_angle<span class="op">[</span><span class="dv">0</span><span class="op">];</span></span>
+<span id="cb21-242"><a href="#cb21-242" aria-hidden="true" tabindex="-1"></a>    cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span> <span class="op">*</span> leg_side <span class="op">+</span> <span class="dv">1</span><span class="op">].</span>position <span class="op">=</span> goal_angle<span class="op">[</span><span class="dv">1</span><span class="op">];</span></span>
+<span id="cb21-243"><a href="#cb21-243" aria-hidden="true" tabindex="-1"></a>    cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span> <span class="op">*</span> leg_side <span class="op">+</span> <span class="dv">2</span><span class="op">].</span>position <span class="op">=</span> goal_angle<span class="op">[</span><span class="dv">2</span><span class="op">];</span></span>
+<span id="cb21-244"><a href="#cb21-244" aria-hidden="true" tabindex="-1"></a>    cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span> <span class="op">*</span> leg_side<span class="op">].</span>velocity <span class="op">=</span> goal_velocity<span class="op">[</span><span class="dv">0</span><span class="op">];</span></span>
+<span id="cb21-245"><a href="#cb21-245" aria-hidden="true" tabindex="-1"></a>    cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span> <span class="op">*</span> leg_side <span class="op">+</span> <span class="dv">1</span><span class="op">].</span>velocity <span class="op">=</span> goal_velocity<span class="op">[</span><span class="dv">1</span><span class="op">];</span></span>
+<span id="cb21-246"><a href="#cb21-246" aria-hidden="true" tabindex="-1"></a>    cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span> <span class="op">*</span> leg_side <span class="op">+</span> <span class="dv">2</span><span class="op">].</span>velocity <span class="op">=</span> goal_velocity<span class="op">[</span><span class="dv">2</span><span class="op">];</span></span>
+<span id="cb21-247"><a href="#cb21-247" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">12</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb21-248"><a href="#cb21-248" aria-hidden="true" tabindex="-1"></a>      cmd<span class="op">.</span>joint_cmd<span class="op">[</span>i<span class="op">].</span>torque <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-249"><a href="#cb21-249" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb21-250"><a href="#cb21-250" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span> <span class="cf">else</span><span class="op">{</span></span>
+<span id="cb21-251"><a href="#cb21-251" aria-hidden="true" tabindex="-1"></a>    <span class="co">///&lt; Joint pd control - force control method, i.e. kp, kd, goal_ angle，goal_ Set level to 0</span></span>
+<span id="cb21-252"><a href="#cb21-252" aria-hidden="true" tabindex="-1"></a>    <span class="co">///&lt; The upper layer obtains real-time joint data and compares it with the target, performs pd control, calculates the expected torque of each joint, and sends it as a feedforward force tor to the joint end, which directly executes the target torque</span></span>
+<span id="cb21-253"><a href="#cb21-253" aria-hidden="true" tabindex="-1"></a>    cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span> <span class="op">*</span> leg_side<span class="op">].</span>kp <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-254"><a href="#cb21-254" aria-hidden="true" tabindex="-1"></a>    cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span> <span class="op">*</span> leg_side <span class="op">+</span> <span class="dv">1</span><span class="op">].</span>kp <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-255"><a href="#cb21-255" aria-hidden="true" tabindex="-1"></a>    cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span> <span class="op">*</span> leg_side <span class="op">+</span> <span class="dv">2</span><span class="op">].</span>kp <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-256"><a href="#cb21-256" aria-hidden="true" tabindex="-1"></a>    cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span> <span class="op">*</span> leg_side<span class="op">].</span>kd <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-257"><a href="#cb21-257" aria-hidden="true" tabindex="-1"></a>    cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span> <span class="op">*</span> leg_side <span class="op">+</span> <span class="dv">1</span><span class="op">].</span>kd <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-258"><a href="#cb21-258" aria-hidden="true" tabindex="-1"></a>    cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span> <span class="op">*</span> leg_side <span class="op">+</span> <span class="dv">2</span><span class="op">].</span>kd <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-259"><a href="#cb21-259" aria-hidden="true" tabindex="-1"></a>    cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span> <span class="op">*</span> leg_side<span class="op">].</span>position <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-260"><a href="#cb21-260" aria-hidden="true" tabindex="-1"></a>    cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span> <span class="op">*</span> leg_side <span class="op">+</span> <span class="dv">1</span><span class="op">].</span>position <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-261"><a href="#cb21-261" aria-hidden="true" tabindex="-1"></a>    cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span> <span class="op">*</span> leg_side <span class="op">+</span> <span class="dv">2</span><span class="op">].</span>position <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-262"><a href="#cb21-262" aria-hidden="true" tabindex="-1"></a>    cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span> <span class="op">*</span> leg_side<span class="op">].</span>velocity <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-263"><a href="#cb21-263" aria-hidden="true" tabindex="-1"></a>    cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span> <span class="op">*</span> leg_side <span class="op">+</span> <span class="dv">1</span><span class="op">].</span>velocity <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-264"><a href="#cb21-264" aria-hidden="true" tabindex="-1"></a>    cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span> <span class="op">*</span> leg_side <span class="op">+</span> <span class="dv">2</span><span class="op">].</span>velocity <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-265"><a href="#cb21-265" aria-hidden="true" tabindex="-1"></a>    cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span><span class="op">*</span> leg_side<span class="op">].</span>torque <span class="op">=</span> <span class="dv">60</span> <span class="op">*</span> <span class="op">(</span>goal_angle<span class="op">[</span><span class="dv">0</span><span class="op">]</span> <span class="op">-</span> data<span class="op">.</span>joint_data<span class="op">.</span>joint_data<span class="op">[</span><span class="dv">3</span><span class="op">*</span> leg_side<span class="op">].</span>position<span class="op">)</span></span>
+<span id="cb21-266"><a href="#cb21-266" aria-hidden="true" tabindex="-1"></a>                                    <span class="op">+</span> <span class="fl">0.7</span> <span class="op">*</span> <span class="op">(</span>goal_velocity<span class="op">[</span><span class="dv">0</span><span class="op">]</span> <span class="op">-</span> data<span class="op">.</span>joint_data<span class="op">.</span>joint_data<span class="op">[</span><span class="dv">3</span><span class="op">*</span> leg_side<span class="op">].</span>velocity<span class="op">);</span></span>
+<span id="cb21-267"><a href="#cb21-267" aria-hidden="true" tabindex="-1"></a>    cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span><span class="op">*</span> leg_side<span class="op">+</span><span class="dv">1</span><span class="op">].</span>torque <span class="op">=</span> <span class="dv">80</span> <span class="op">*</span> <span class="op">(</span>goal_angle<span class="op">[</span><span class="dv">1</span><span class="op">]</span> <span class="op">-</span> data<span class="op">.</span>joint_data<span class="op">.</span>joint_data<span class="op">[</span><span class="dv">3</span><span class="op">*</span> leg_side<span class="op">+</span><span class="dv">1</span><span class="op">].</span>position<span class="op">)</span></span>
+<span id="cb21-268"><a href="#cb21-268" aria-hidden="true" tabindex="-1"></a>                                    <span class="op">+</span> <span class="fl">0.7</span> <span class="op">*</span> <span class="op">(</span>goal_velocity<span class="op">[</span><span class="dv">1</span><span class="op">]</span> <span class="op">-</span> data<span class="op">.</span>joint_data<span class="op">.</span>joint_data<span class="op">[</span><span class="dv">3</span><span class="op">*</span> leg_side<span class="op">+</span><span class="dv">1</span><span class="op">].</span>velocity<span class="op">);</span></span>
+<span id="cb21-269"><a href="#cb21-269" aria-hidden="true" tabindex="-1"></a>    cmd<span class="op">.</span>joint_cmd<span class="op">[</span><span class="dv">3</span><span class="op">*</span> leg_side<span class="op">+</span><span class="dv">2</span><span class="op">].</span>torque <span class="op">=</span> <span class="dv">80</span> <span class="op">*</span> <span class="op">(</span>goal_angle<span class="op">[</span><span class="dv">2</span><span class="op">]</span> <span class="op">-</span> data<span class="op">.</span>joint_data<span class="op">.</span>joint_data<span class="op">[</span><span class="dv">3</span><span class="op">*</span> leg_side<span class="op">+</span><span class="dv">2</span><span class="op">].</span>position<span class="op">)</span></span>
+<span id="cb21-270"><a href="#cb21-270" aria-hidden="true" tabindex="-1"></a>                                    <span class="op">+</span> <span class="fl">0.7</span> <span class="op">*</span> <span class="op">(</span>goal_velocity<span class="op">[</span><span class="dv">2</span><span class="op">]</span> <span class="op">-</span> data<span class="op">.</span>joint_data<span class="op">.</span>joint_data<span class="op">[</span><span class="dv">3</span><span class="op">*</span> leg_side<span class="op">+</span><span class="dv">2</span><span class="op">].</span>velocity<span class="op">);</span></span>
+<span id="cb21-271"><a href="#cb21-271" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb21-272"><a href="#cb21-272" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb21-273"><a href="#cb21-273" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-274"><a href="#cb21-274" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@brief</span><span class="co"> Interpolation to find the path point, i.e. the target angle for each control cycle</span></span>
+<span id="cb21-275"><a href="#cb21-275" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">init_position</span><span class="co"> </span></span>
+<span id="cb21-276"><a href="#cb21-276" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">init_velocity</span><span class="co"> </span></span>
+<span id="cb21-277"><a href="#cb21-277" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">goal_position</span><span class="co"> </span></span>
+<span id="cb21-278"><a href="#cb21-278" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">goal_velocity</span><span class="co"> </span></span>
+<span id="cb21-279"><a href="#cb21-279" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">run_time</span><span class="co"> </span></span>
+<span id="cb21-280"><a href="#cb21-280" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">cycle_time</span><span class="co"> Control cycle, default is 1ms</span></span>
+<span id="cb21-281"><a href="#cb21-281" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">total_time</span><span class="co"> </span></span>
+<span id="cb21-282"><a href="#cb21-282" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">sub_goal_position</span><span class="co"> Target angle for the control cycle</span></span>
+<span id="cb21-283"><a href="#cb21-283" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">sub_goal_position_next</span><span class="co"> Target angle for the next control cycle</span></span>
+<span id="cb21-284"><a href="#cb21-284" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">sub_goal_position_next2</span><span class="co"> Target angle for the next and next control cycle</span></span>
+<span id="cb21-285"><a href="#cb21-285" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> MotionExample<span class="op">::</span>CubicSpline<span class="op">(</span><span class="dt">double</span> init_position<span class="op">,</span> <span class="dt">double</span> init_velocity<span class="op">,</span></span>
+<span id="cb21-286"><a href="#cb21-286" aria-hidden="true" tabindex="-1"></a>                                <span class="dt">double</span> goal_position<span class="op">,</span> <span class="dt">double</span> goal_velocity<span class="op">,</span></span>
+<span id="cb21-287"><a href="#cb21-287" aria-hidden="true" tabindex="-1"></a>                                <span class="dt">double</span> run_time<span class="op">,</span> <span class="dt">double</span> cycle_time<span class="op">,</span></span>
+<span id="cb21-288"><a href="#cb21-288" aria-hidden="true" tabindex="-1"></a>                                <span class="dt">double</span> total_time<span class="op">,</span> <span class="dt">double</span> <span class="op">&amp;</span>sub_goal_position<span class="op">,</span></span>
+<span id="cb21-289"><a href="#cb21-289" aria-hidden="true" tabindex="-1"></a>                                <span class="dt">double</span> <span class="op">&amp;</span>sub_goal_position_next<span class="op">,</span></span>
+<span id="cb21-290"><a href="#cb21-290" aria-hidden="true" tabindex="-1"></a>                                <span class="dt">double</span> <span class="op">&amp;</span>sub_goal_position_next2<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb21-291"><a href="#cb21-291" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> a<span class="op">,</span> b<span class="op">,</span> c<span class="op">,</span> d<span class="op">;</span></span>
+<span id="cb21-292"><a href="#cb21-292" aria-hidden="true" tabindex="-1"></a>  d <span class="op">=</span> init_position<span class="op">;</span></span>
+<span id="cb21-293"><a href="#cb21-293" aria-hidden="true" tabindex="-1"></a>  c <span class="op">=</span> init_velocity<span class="op">;</span></span>
+<span id="cb21-294"><a href="#cb21-294" aria-hidden="true" tabindex="-1"></a>  a <span class="op">=</span> <span class="op">(</span>goal_velocity <span class="op">*</span> total_time <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> goal_position <span class="op">+</span> init_velocity <span class="op">*</span> total_time <span class="op">+</span></span>
+<span id="cb21-295"><a href="#cb21-295" aria-hidden="true" tabindex="-1"></a>       <span class="dv">2</span> <span class="op">*</span> init_position<span class="op">)</span> <span class="op">/</span></span>
+<span id="cb21-296"><a href="#cb21-296" aria-hidden="true" tabindex="-1"></a>      pow<span class="op">(</span>total_time<span class="op">,</span> <span class="dv">3</span><span class="op">);</span></span>
+<span id="cb21-297"><a href="#cb21-297" aria-hidden="true" tabindex="-1"></a>  b <span class="op">=</span> <span class="op">(</span><span class="dv">3</span> <span class="op">*</span> goal_position <span class="op">-</span> goal_velocity <span class="op">*</span> total_time <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> init_velocity <span class="op">*</span> total_time <span class="op">-</span></span>
+<span id="cb21-298"><a href="#cb21-298" aria-hidden="true" tabindex="-1"></a>       <span class="dv">3</span> <span class="op">*</span> init_position<span class="op">)</span> <span class="op">/</span></span>
+<span id="cb21-299"><a href="#cb21-299" aria-hidden="true" tabindex="-1"></a>      pow<span class="op">(</span>total_time<span class="op">,</span> <span class="dv">2</span><span class="op">);</span></span>
+<span id="cb21-300"><a href="#cb21-300" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-301"><a href="#cb21-301" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="op">(</span>run_time <span class="op">&gt;</span> total_time<span class="op">)</span></span>
+<span id="cb21-302"><a href="#cb21-302" aria-hidden="true" tabindex="-1"></a>    run_time <span class="op">=</span> total_time<span class="op">;</span></span>
+<span id="cb21-303"><a href="#cb21-303" aria-hidden="true" tabindex="-1"></a>  sub_goal_position <span class="op">=</span> a <span class="op">*</span> pow<span class="op">(</span>run_time<span class="op">,</span> <span class="dv">3</span><span class="op">)</span> <span class="op">+</span> b <span class="op">*</span> pow<span class="op">(</span>run_time<span class="op">,</span> <span class="dv">2</span><span class="op">)</span> <span class="op">+</span> c <span class="op">*</span> run_time <span class="op">+</span> d<span class="op">;</span></span>
+<span id="cb21-304"><a href="#cb21-304" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-305"><a href="#cb21-305" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="op">(</span>run_time <span class="op">+</span> cycle_time <span class="op">&gt;</span> total_time<span class="op">)</span></span>
+<span id="cb21-306"><a href="#cb21-306" aria-hidden="true" tabindex="-1"></a>    run_time <span class="op">=</span> total_time <span class="op">-</span> cycle_time<span class="op">;</span></span>
+<span id="cb21-307"><a href="#cb21-307" aria-hidden="true" tabindex="-1"></a>  sub_goal_position_next <span class="op">=</span> a <span class="op">*</span> pow<span class="op">(</span>run_time <span class="op">+</span> cycle_time<span class="op">,</span> <span class="dv">3</span><span class="op">)</span> <span class="op">+</span></span>
+<span id="cb21-308"><a href="#cb21-308" aria-hidden="true" tabindex="-1"></a>                      b <span class="op">*</span> pow<span class="op">(</span>run_time <span class="op">+</span> cycle_time<span class="op">,</span> <span class="dv">2</span><span class="op">)</span> <span class="op">+</span></span>
+<span id="cb21-309"><a href="#cb21-309" aria-hidden="true" tabindex="-1"></a>                      c <span class="op">*</span> <span class="op">(</span>run_time <span class="op">+</span> cycle_time<span class="op">)</span> <span class="op">+</span> d<span class="op">;</span></span>
+<span id="cb21-310"><a href="#cb21-310" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-311"><a href="#cb21-311" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="op">(</span>run_time <span class="op">+</span> cycle_time <span class="op">*</span> <span class="dv">2</span> <span class="op">&gt;</span> total_time<span class="op">)</span></span>
+<span id="cb21-312"><a href="#cb21-312" aria-hidden="true" tabindex="-1"></a>    run_time <span class="op">=</span> total_time <span class="op">-</span> cycle_time <span class="op">*</span> <span class="dv">2</span><span class="op">;</span></span>
+<span id="cb21-313"><a href="#cb21-313" aria-hidden="true" tabindex="-1"></a>  sub_goal_position_next2 <span class="op">=</span> a <span class="op">*</span> pow<span class="op">(</span>run_time <span class="op">+</span> cycle_time <span class="op">*</span> <span class="dv">2</span><span class="op">,</span> <span class="dv">3</span><span class="op">)</span> <span class="op">+</span></span>
+<span id="cb21-314"><a href="#cb21-314" aria-hidden="true" tabindex="-1"></a>                       b <span class="op">*</span> pow<span class="op">(</span>run_time <span class="op">+</span> cycle_time <span class="op">*</span> <span class="dv">2</span><span class="op">,</span> <span class="dv">2</span><span class="op">)</span> <span class="op">+</span></span>
+<span id="cb21-315"><a href="#cb21-315" aria-hidden="true" tabindex="-1"></a>                       c <span class="op">*</span> <span class="op">(</span>run_time <span class="op">+</span> cycle_time <span class="op">*</span> <span class="dv">2</span><span class="op">)</span> <span class="op">+</span> d<span class="op">;</span></span>
+<span id="cb21-316"><a href="#cb21-316" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="motionexample.h" class="level3">
+<h3 class="anchored" data-anchor-id="motionexample.h">motionexample.h</h3>
+<div class="sourceCode" id="cb22"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">"receiver.h"</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">"robot_types.h"</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;time.h&gt;</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;string.h&gt;</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">"Eigen/Dense"</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="kw">using</span> <span class="kw">namespace</span> std<span class="op">;</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="kw">using</span> <span class="kw">namespace</span> Eigen<span class="op">;</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> Matrix<span class="op">&lt;</span> <span class="dt">double</span><span class="op">,</span> <span class="dv">3</span><span class="op">,</span> <span class="dv">1</span><span class="op">&gt;</span> Vec3<span class="op">;</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="at">const</span> <span class="dt">double</span> kDegree2Radian <span class="op">=</span> <span class="fl">3.1415926</span> <span class="op">/</span> <span class="dv">180</span><span class="op">;</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> MotionExample<span class="op">{</span></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span><span class="op">:</span></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span><span class="op">:</span></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@brief</span><span class="co"> Spend 1 s putting the robot's legs away and preparing to stand</span></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">cmd</span><span class="co"> Issue control command</span></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">time</span><span class="co"> Current timestamp</span></span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">data_state</span><span class="co"> Real-time status data of robot</span></span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>    <span class="dt">void</span> PreStandUp<span class="op">(</span>RobotCmd <span class="op">&amp;</span>cmd<span class="op">,</span> <span class="dt">double</span> time<span class="op">,</span>RobotData <span class="op">&amp;</span>data_state<span class="op">);</span></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@brief</span><span class="co"> Spend 1.5s standing</span></span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">cmd</span><span class="co"> Issue control command</span></span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">time</span><span class="co"> Current timestamp</span></span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">data_state</span><span class="co"> Real-time status data of robot</span></span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>    <span class="dt">void</span> StandUp<span class="op">(</span>RobotCmd <span class="op">&amp;</span>cmd<span class="op">,</span> <span class="dt">double</span> time<span class="op">,</span>RobotData <span class="op">&amp;</span>data_state<span class="op">);</span></span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@brief</span><span class="co"> Extend all 4 legs to raise the robot higher</span></span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">cmd</span><span class="co"> Issue control command</span></span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">time</span><span class="co"> Current timestamp</span></span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">data_state</span><span class="co"> Real-time status data of robot</span></span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a>    <span class="dt">void</span> ExtendAllLegs<span class="op">(</span>RobotCmd <span class="op">&amp;</span>cmd<span class="op">,</span> <span class="dt">double</span> time<span class="op">,</span> RobotData <span class="op">&amp;</span>data_state<span class="op">);</span></span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@brief</span><span class="co"> Lower all 4 legs to bring robot closer to ground</span></span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">cmd</span><span class="co"> Issue control command</span></span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">time</span><span class="co"> Current timestamp</span></span>
+<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">data_state</span><span class="co"> Real-time status data of robot</span></span>
+<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a>    <span class="dt">void</span> LowerAllLegs<span class="op">(</span>RobotCmd <span class="op">&amp;</span>cmd<span class="op">,</span> <span class="dt">double</span> time<span class="op">,</span> RobotData <span class="op">&amp;</span>data_state<span class="op">);</span></span>
+<span id="cb22-40"><a href="#cb22-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-41"><a href="#cb22-41" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@brief</span><span class="co"> Specifically achieve swinging one leg of the robot to a specified position within a specified time</span></span>
+<span id="cb22-42"><a href="#cb22-42" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">initial_angle</span><span class="co"> </span></span>
+<span id="cb22-43"><a href="#cb22-43" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">final_angle</span></span>
+<span id="cb22-44"><a href="#cb22-44" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">total_time</span></span>
+<span id="cb22-45"><a href="#cb22-45" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">run_time</span></span>
+<span id="cb22-46"><a href="#cb22-46" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">cycle_time</span><span class="co"> Control cycle, default is 1ms</span></span>
+<span id="cb22-47"><a href="#cb22-47" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">side</span><span class="co"> Control which leg, FL is the left front leg, FR is the right front leg, HL is the left and right leg, and HR is the right rear leg</span></span>
+<span id="cb22-48"><a href="#cb22-48" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">cmd</span><span class="co"> Issue control command</span></span>
+<span id="cb22-49"><a href="#cb22-49" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">data</span><span class="co"> Real-time status data of robot</span></span>
+<span id="cb22-50"><a href="#cb22-50" aria-hidden="true" tabindex="-1"></a>    <span class="dt">void</span> SwingToAngle<span class="op">(</span>Vec3 initial_angle<span class="op">,</span> Vec3 final_angle<span class="op">,</span> <span class="dt">double</span> total_time<span class="op">,</span> <span class="dt">double</span> run_time<span class="op">,</span> <span class="dt">double</span> cycle_time<span class="op">,</span> string side<span class="op">,</span> RobotCmd <span class="op">&amp;</span>cmd<span class="op">,</span>  RobotData <span class="op">&amp;</span>data<span class="op">);</span></span>
+<span id="cb22-51"><a href="#cb22-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-52"><a href="#cb22-52" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@brief</span><span class="co"> Interpolation to find the path point, i.e. the target angle for each control cycle</span></span>
+<span id="cb22-53"><a href="#cb22-53" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">init_position</span><span class="co"> </span></span>
+<span id="cb22-54"><a href="#cb22-54" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">init_velocity</span><span class="co"> </span></span>
+<span id="cb22-55"><a href="#cb22-55" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">goal_position</span><span class="co"> </span></span>
+<span id="cb22-56"><a href="#cb22-56" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">goal_velocity</span><span class="co"> </span></span>
+<span id="cb22-57"><a href="#cb22-57" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">run_time</span><span class="co"> </span></span>
+<span id="cb22-58"><a href="#cb22-58" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">cycle_time</span><span class="co"> </span></span>
+<span id="cb22-59"><a href="#cb22-59" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">total_time</span><span class="co"> </span></span>
+<span id="cb22-60"><a href="#cb22-60" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">sub_goal_position</span><span class="co"> Target angle for the control cycle</span></span>
+<span id="cb22-61"><a href="#cb22-61" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">sub_goal_position_next</span><span class="co"> Target angle for the next control cycle</span></span>
+<span id="cb22-62"><a href="#cb22-62" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">sub_goal_position_next2</span><span class="co"> Target angle for the next and next control cycle</span></span>
+<span id="cb22-63"><a href="#cb22-63" aria-hidden="true" tabindex="-1"></a>    <span class="dt">void</span> CubicSpline<span class="op">(</span><span class="dt">double</span> init_position<span class="op">,</span> <span class="dt">double</span> init_velocity<span class="op">,</span> <span class="dt">double</span> goal_position<span class="op">,</span> <span class="dt">double</span> goal_velocity<span class="op">,</span> <span class="dt">double</span> run_time<span class="op">,</span> <span class="dt">double</span> cycle_time<span class="op">,</span> <span class="dt">double</span> total_time<span class="op">,</span> <span class="dt">double</span> <span class="op">&amp;</span>sub_goal_position<span class="op">,</span> <span class="dt">double</span> <span class="op">&amp;</span>sub_goal_position_next<span class="op">,</span> <span class="dt">double</span> <span class="op">&amp;</span>sub_goal_position_next2<span class="op">);</span></span>
+<span id="cb22-64"><a href="#cb22-64" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb22-65"><a href="#cb22-65" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@brief</span><span class="co"> Only the current moment and angle are recorded</span></span>
+<span id="cb22-66"><a href="#cb22-66" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">data</span><span class="co"> Current joint data</span></span>
+<span id="cb22-67"><a href="#cb22-67" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">time</span><span class="co"> Current timestamp</span></span>
+<span id="cb22-68"><a href="#cb22-68" aria-hidden="true" tabindex="-1"></a>    <span class="dt">void</span> GetInitData<span class="op">(</span>LegData data<span class="op">,</span> <span class="dt">double</span> time<span class="op">);</span></span>
+<span id="cb22-69"><a href="#cb22-69" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="stand_up.cpp" class="level3">
+<h3 class="anchored" data-anchor-id="stand_up.cpp">stand_up.cpp</h3>
+<div class="sourceCode" id="cb23"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co">/// Stand Up Script for Jueying Lite3</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="co">/// Makes the robot stand up and maintain standing position</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">"sender.h"</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">"receiver.h"</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">"dr_timer.h"</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">"motionexample.h"</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;iostream&gt;</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;string.h&gt;</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="kw">using</span> <span class="kw">namespace</span> std<span class="op">;</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span><span class="op">*</span> argv<span class="op">[]){</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  DRTimer set_timer<span class="op">;</span></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> now_time<span class="op">,</span> start_time<span class="op">;</span></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>  RobotCmd robot_joint_cmd<span class="op">;</span></span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>  memset<span class="op">(&amp;</span>robot_joint_cmd<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span>robot_joint_cmd<span class="op">));</span></span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Create sender to robot (IP: 192.168.1.120, Port: 43893)</span></span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>  Sender<span class="op">*</span> send_cmd <span class="op">=</span> <span class="kw">new</span> Sender<span class="op">(</span><span class="st">"192.168.1.120"</span><span class="op">,</span> <span class="dv">43893</span><span class="op">);</span></span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Create receiver for robot data</span></span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>  Receiver<span class="op">*</span> robot_data_recv <span class="op">=</span> <span class="kw">new</span> Receiver<span class="op">();</span></span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>  RobotData <span class="op">*</span>robot_data <span class="op">=</span> <span class="op">&amp;</span>robot_data_recv<span class="op">-&gt;</span>GetState<span class="op">();</span></span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>  robot_data_recv<span class="op">-&gt;</span>StartWork<span class="op">();</span></span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Initialize timer with 1ms cycle</span></span>
+<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a>  set_timer<span class="op">.</span>TimeInit<span class="op">(</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Reset all joints to zero and gain control</span></span>
+<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a>  cout <span class="op">&lt;&lt;</span> <span class="st">"Initializing robot... Please ensure robot is in ready position."</span> <span class="op">&lt;&lt;</span> endl<span class="op">;</span></span>
+<span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a>  send_cmd<span class="op">-&gt;</span>RobotStateInit<span class="op">();</span></span>
+<span id="cb23-33"><a href="#cb23-33" aria-hidden="true" tabindex="-1"></a>  cout <span class="op">&lt;&lt;</span> <span class="st">"Robot initialized. Starting stand-up sequence..."</span> <span class="op">&lt;&lt;</span> endl<span class="op">;</span></span>
+<span id="cb23-34"><a href="#cb23-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-35"><a href="#cb23-35" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Create motion example</span></span>
+<span id="cb23-36"><a href="#cb23-36" aria-hidden="true" tabindex="-1"></a>  MotionExample robot_stand<span class="op">;</span></span>
+<span id="cb23-37"><a href="#cb23-37" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-38"><a href="#cb23-38" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Get start time</span></span>
+<span id="cb23-39"><a href="#cb23-39" aria-hidden="true" tabindex="-1"></a>  start_time <span class="op">=</span> set_timer<span class="op">.</span>GetCurrentTime<span class="op">();</span></span>
+<span id="cb23-40"><a href="#cb23-40" aria-hidden="true" tabindex="-1"></a>  robot_stand<span class="op">.</span>GetInitData<span class="op">(</span>robot_data<span class="op">-&gt;</span>joint_data<span class="op">,</span> <span class="fl">0.0</span><span class="op">);</span></span>
+<span id="cb23-41"><a href="#cb23-41" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-42"><a href="#cb23-42" aria-hidden="true" tabindex="-1"></a>  <span class="dt">int</span> time_tick <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb23-43"><a href="#cb23-43" aria-hidden="true" tabindex="-1"></a>  <span class="dt">bool</span> standing_complete <span class="op">=</span> <span class="kw">false</span><span class="op">;</span></span>
+<span id="cb23-44"><a href="#cb23-44" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-45"><a href="#cb23-45" aria-hidden="true" tabindex="-1"></a>  cout <span class="op">&lt;&lt;</span> <span class="st">"Standing up... (Press Ctrl+C to stop and release control)"</span> <span class="op">&lt;&lt;</span> endl<span class="op">;</span></span>
+<span id="cb23-46"><a href="#cb23-46" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-47"><a href="#cb23-47" aria-hidden="true" tabindex="-1"></a>  <span class="cf">while</span><span class="op">(</span><span class="dv">1</span><span class="op">){</span></span>
+<span id="cb23-48"><a href="#cb23-48" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>set_timer<span class="op">.</span>TimerInterrupt<span class="op">()</span> <span class="op">==</span> <span class="kw">true</span><span class="op">){</span></span>
+<span id="cb23-49"><a href="#cb23-49" aria-hidden="true" tabindex="-1"></a>      <span class="cf">continue</span><span class="op">;</span></span>
+<span id="cb23-50"><a href="#cb23-50" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb23-51"><a href="#cb23-51" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb23-52"><a href="#cb23-52" aria-hidden="true" tabindex="-1"></a>    now_time <span class="op">=</span> set_timer<span class="op">.</span>GetIntervalTime<span class="op">(</span>start_time<span class="op">);</span></span>
+<span id="cb23-53"><a href="#cb23-53" aria-hidden="true" tabindex="-1"></a>    time_tick<span class="op">++;</span></span>
+<span id="cb23-54"><a href="#cb23-54" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb23-55"><a href="#cb23-55" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Phase 1: Pre-stand (1 second) - fold legs in</span></span>
+<span id="cb23-56"><a href="#cb23-56" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span><span class="op">(</span>time_tick <span class="op">&lt;</span> <span class="dv">1000</span><span class="op">){</span></span>
+<span id="cb23-57"><a href="#cb23-57" aria-hidden="true" tabindex="-1"></a>      robot_stand<span class="op">.</span>PreStandUp<span class="op">(</span>robot_joint_cmd<span class="op">,</span> now_time<span class="op">,</span> <span class="op">*</span>robot_data<span class="op">);</span></span>
+<span id="cb23-58"><a href="#cb23-58" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb23-59"><a href="#cb23-59" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Phase 2: Stand up (1.5 seconds)</span></span>
+<span id="cb23-60"><a href="#cb23-60" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span> <span class="cf">if</span><span class="op">(</span>time_tick <span class="op">&lt;</span> <span class="dv">2500</span><span class="op">){</span></span>
+<span id="cb23-61"><a href="#cb23-61" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span><span class="op">(</span>time_tick <span class="op">==</span> <span class="dv">1000</span><span class="op">){</span></span>
+<span id="cb23-62"><a href="#cb23-62" aria-hidden="true" tabindex="-1"></a>        robot_stand<span class="op">.</span>GetInitData<span class="op">(</span>robot_data<span class="op">-&gt;</span>joint_data<span class="op">,</span> now_time<span class="op">);</span></span>
+<span id="cb23-63"><a href="#cb23-63" aria-hidden="true" tabindex="-1"></a>        cout <span class="op">&lt;&lt;</span> <span class="st">"Extending legs..."</span> <span class="op">&lt;&lt;</span> endl<span class="op">;</span></span>
+<span id="cb23-64"><a href="#cb23-64" aria-hidden="true" tabindex="-1"></a>      <span class="op">}</span></span>
+<span id="cb23-65"><a href="#cb23-65" aria-hidden="true" tabindex="-1"></a>      robot_stand<span class="op">.</span>StandUp<span class="op">(</span>robot_joint_cmd<span class="op">,</span> now_time<span class="op">,</span> <span class="op">*</span>robot_data<span class="op">);</span></span>
+<span id="cb23-66"><a href="#cb23-66" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb23-67"><a href="#cb23-67" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Phase 3: Maintain standing position</span></span>
+<span id="cb23-68"><a href="#cb23-68" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb23-69"><a href="#cb23-69" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span><span class="op">(!</span>standing_complete<span class="op">){</span></span>
+<span id="cb23-70"><a href="#cb23-70" aria-hidden="true" tabindex="-1"></a>        cout <span class="op">&lt;&lt;</span> <span class="st">"Standing position achieved. Maintaining stance..."</span> <span class="op">&lt;&lt;</span> endl<span class="op">;</span></span>
+<span id="cb23-71"><a href="#cb23-71" aria-hidden="true" tabindex="-1"></a>        standing_complete <span class="op">=</span> <span class="kw">true</span><span class="op">;</span></span>
+<span id="cb23-72"><a href="#cb23-72" aria-hidden="true" tabindex="-1"></a>      <span class="op">}</span></span>
+<span id="cb23-73"><a href="#cb23-73" aria-hidden="true" tabindex="-1"></a>      <span class="co">// Continue calling StandUp which maintains position after completion</span></span>
+<span id="cb23-74"><a href="#cb23-74" aria-hidden="true" tabindex="-1"></a>      robot_stand<span class="op">.</span>StandUp<span class="op">(</span>robot_joint_cmd<span class="op">,</span> now_time<span class="op">,</span> <span class="op">*</span>robot_data<span class="op">);</span></span>
+<span id="cb23-75"><a href="#cb23-75" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb23-76"><a href="#cb23-76" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb23-77"><a href="#cb23-77" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Send commands to robot</span></span>
+<span id="cb23-78"><a href="#cb23-78" aria-hidden="true" tabindex="-1"></a>    send_cmd<span class="op">-&gt;</span>SendCmd<span class="op">(</span>robot_joint_cmd<span class="op">);</span></span>
+<span id="cb23-79"><a href="#cb23-79" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb23-80"><a href="#cb23-80" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-81"><a href="#cb23-81" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb23-82"><a href="#cb23-82" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
